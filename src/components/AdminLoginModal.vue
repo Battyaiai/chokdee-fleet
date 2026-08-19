@@ -25,13 +25,13 @@
             type="password"
             class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs text-slate-900"
             v-model="pinInput"
-            placeholder="กรอกรหัส PIN (ค่าเริ่มต้น: 8888)"
+            placeholder="กรอกรหัส PIN "
             autofocus
             required
           />
         </div>
         <span class="text-[11px] text-slate-400 block mt-1">
-          💡 รหัสผ่านเริ่มต้นคือ: <code class="font-mono font-bold text-blue-700 bg-slate-100 px-1 py-0.5 rounded">8888</code>
+          
         </span>
       </div>
 
