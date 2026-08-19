@@ -36,12 +36,12 @@
           <AppButton 
             variant="secondary" 
             size="md" 
-            class="hidden sm:inline-flex"
-            @click="handlePrint"
-            title="เปิดหน้าต่างพิมพ์เอกสาร A4 (สำหรับคอมพิวเตอร์)"
+            class="flex-1 sm:flex-initial justify-center"
+            @click="handleOpenPrintWindow"
+            title="เปิดหน้าต่างพิมพ์เอกสาร A4 และบันทึก PDF"
           >
             <Printer :size="16" />
-            <span>พิมพ์ A4</span>
+            <span>พิมพ์ A4 / บันทึก PDF</span>
           </AppButton>
         </div>
       </div>
@@ -442,24 +442,63 @@ const handlePrint = () => {
   window.print();
 };
 
+const handleOpenPrintWindow = () => {
+  const element = document.getElementById('report-printable-area');
+  if (!element) return;
+
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    window.print();
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="th">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>โชคดีค้าข้าว - รายงาน</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+      <style>
+        @page { size: A4 portrait; margin: 8mm; }
+        body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 12px; color: #0f172a; background: #fff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+        th { background-color: #f1f5f9; border: 1px solid #94a3b8; padding: 6px 8px; font-weight: bold; text-align: left; color: #1e293b; }
+        td { border: 1px solid #cbd5e1; padding: 5px 8px; vertical-align: middle; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .no-print { display: block; margin-bottom: 12px; }
+        @media print { .no-print { display: none !important; } }
+      </style>
+    </head>
+    <body>
+      <div class="no-print" style="text-align: right; padding-bottom: 10px;">
+        <button onclick="window.print()" style="background: #2563eb; color: #fff; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; font-family: 'Sarabun', sans-serif;">
+          🖨️ สั่งพิมพ์ / บันทึก PDF (Print / Save)
+        </button>
+      </div>
+      ${element.innerHTML}
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+          }, 350);
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+};
+
 const handleDownloadPDF = async () => {
   const element = document.getElementById('report-printable-area');
   if (!element) return;
 
   try {
     generatingPdf.value = true;
-
-    // Clone element to apply explicit isolated styling for html2canvas
-    const clone = element.cloneNode(true);
-    clone.style.width = '794px'; // Exactly A4 width at 96 DPI
-    clone.style.maxWidth = '794px';
-    clone.style.padding = '15px';
-    clone.style.backgroundColor = '#ffffff';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.boxSizing = 'border-box';
-    document.body.appendChild(clone);
 
     const opt = {
       margin: [6, 6, 6, 6],
@@ -468,18 +507,18 @@ const handleDownloadPDF = async () => {
       html2canvas: { 
         scale: 2, 
         useCORS: true, 
-        letterRendering: true,
         backgroundColor: '#ffffff',
-        windowWidth: 794
+        logging: false,
+        scrollY: 0
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    await html2pdf().set(opt).from(clone).save();
-    document.body.removeChild(clone);
+    await html2pdf().set(opt).from(element).save();
   } catch (err) {
     console.error('PDF Generation Error:', err);
-    alert('เกิดข้อผิดพลาดในการดาวน์โหลด PDF: ' + err.message);
+    // Fallback: open clean print window
+    handleOpenPrintWindow();
   } finally {
     generatingPdf.value = false;
   }
