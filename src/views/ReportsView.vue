@@ -157,16 +157,16 @@
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #334155;">{{ v.type }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; color: #475569;">{{ v.year || '-' }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 10.5px; color: #475569;">{{ v.vin || '-' }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center;">
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle;">
                   <span 
                     :style="v.status === 'active' 
-                      ? 'background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;' 
-                      : 'background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 9999px; font-size: 10px;'"
+                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;' 
+                      : 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; border-radius: 9999px; font-size: 10.5px; white-space: nowrap;'"
                   >
                     {{ v.status === 'active' ? 'ใช้งานอยู่' : 'ซ่อม/พัก' }}
                   </span>
                 </td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px;">{{ v.createdBy || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px; vertical-align: middle;">{{ v.createdBy || '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -195,7 +195,7 @@
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">เลขที่ / บริษัท</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 95px;">วันหมดอายุ</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 85px;">ค่าใช้จ่าย</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 95px;">สถานะ</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 110px;">สถานะ</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ผู้บันทึก</th>
               </tr>
             </thead>
@@ -205,26 +205,26 @@
                 :key="idx" 
                 :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
               >
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb;">{{ doc.vehicle?.code || '-' }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; font-family: monospace;">{{ doc.vehicle?.plateNumber }} {{ doc.vehicle?.province }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 600; color: #0f172a;">{{ doc.docType }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #475569;">{{ doc.docNumber || '-' }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #0f172a;">{{ doc.expire || '-' }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: 600;">฿{{ (doc.costAmount || 0).toLocaleString() }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center;">
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb; vertical-align: middle;">{{ doc.vehicle?.code || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; font-family: monospace; vertical-align: middle;">{{ doc.vehicle?.plateNumber }} {{ doc.vehicle?.province }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 600; color: #0f172a; vertical-align: middle;">{{ doc.docType }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #475569; vertical-align: middle;">{{ doc.docNumber || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #0f172a; vertical-align: middle;">{{ doc.expire || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: 600; vertical-align: middle;">฿{{ (doc.costAmount || 0).toLocaleString() }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle;">
                   <span 
                     :style="doc.daysRemaining < 0 
-                      ? 'background: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;'
+                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;'
                       : doc.daysRemaining <= 30 
-                      ? 'background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;'
+                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;'
                       : doc.daysRemaining <= 60 
-                      ? 'background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;'
-                      : 'background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;'"
+                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;'
+                      : 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;'"
                   >
                     {{ doc.daysRemaining < 0 ? `เลยกำหนด ${Math.abs(doc.daysRemaining)} วัน` : `เหลือ ${doc.daysRemaining} วัน` }}
                   </span>
                 </td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px;">{{ doc.createdBy || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px; vertical-align: middle;">{{ doc.createdBy || '-' }}</td>
               </tr>
             </tbody>
           </table>
