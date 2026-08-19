@@ -90,7 +90,7 @@
           <option value="normal">ปกติ</option>
         </select>
 
-        <AppButton variant="primary" size="md" @click="handleOpenAdd">
+        <AppButton v-if="isAdmin" variant="primary" size="md" @click="handleOpenAdd">
           <Plus :size="16" />
           <span class="whitespace-nowrap">
             {{ activeDocTab === 'insurance' ? 'บันทึกประกันใหม่' : activeDocTab === 'prb' ? 'บันทึก พ.ร.บ. ใหม่' : 'บันทึกต่อทะเบียนใหม่' }}
@@ -115,7 +115,7 @@
               <th class="px-5 py-3 text-right">ค่าเบี้ย (บาท)</th>
               <th class="px-5 py-3 text-center">สถานะวันหมดอายุ</th>
               <th class="px-5 py-3">ผู้บันทึก</th>
-              <th class="px-5 py-3 text-center">จัดการ</th>
+              <th v-if="isAdmin" class="px-5 py-3 text-center">จัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -144,7 +144,7 @@
               <td class="px-5 py-3.5 whitespace-nowrap text-right font-medium text-slate-900">฿{{ (ins.premiumAmount || 0).toLocaleString() }}</td>
               <td class="px-5 py-3.5 whitespace-nowrap text-center"><StatusBadge :days="ins.daysRemaining" /></td>
               <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500">{{ ins.createdBy || '-' }}</td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-center">
+              <td v-if="isAdmin" class="px-5 py-3.5 whitespace-nowrap text-center">
                 <div class="inline-flex items-center gap-1.5">
                   <button class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" @click="handleOpenEdit(ins)" title="แก้ไข" type="button">
                     <Edit2 :size="15" />
@@ -172,7 +172,7 @@
               <th class="px-5 py-3 text-right">ค่า พ.ร.บ. (บาท)</th>
               <th class="px-5 py-3 text-center">สถานะวันหมดอายุ</th>
               <th class="px-5 py-3">ผู้บันทึก</th>
-              <th class="px-5 py-3 text-center">จัดการ</th>
+              <th v-if="isAdmin" class="px-5 py-3 text-center">จัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -200,7 +200,7 @@
               <td class="px-5 py-3.5 whitespace-nowrap text-right font-medium text-slate-900">฿{{ (prb.cost || 0).toLocaleString() }}</td>
               <td class="px-5 py-3.5 whitespace-nowrap text-center"><StatusBadge :days="prb.daysRemaining" /></td>
               <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500">{{ prb.createdBy || '-' }}</td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-center">
+              <td v-if="isAdmin" class="px-5 py-3.5 whitespace-nowrap text-center">
                 <div class="inline-flex items-center gap-1.5">
                   <button class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" @click="handleOpenEdit(prb)" title="แก้ไข" type="button">
                     <Edit2 :size="15" />
@@ -227,7 +227,7 @@
               <th class="px-5 py-3 text-right">ค่าต่อทะเบียน (บาท)</th>
               <th class="px-5 py-3 text-center">สถานะครบกำหนด</th>
               <th class="px-5 py-3">ผู้บันทึก</th>
-              <th class="px-5 py-3 text-center">จัดการ</th>
+              <th v-if="isAdmin" class="px-5 py-3 text-center">จัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -254,7 +254,7 @@
               <td class="px-5 py-3.5 whitespace-nowrap text-right font-medium text-slate-900">฿{{ (tax.cost || 0).toLocaleString() }}</td>
               <td class="px-5 py-3.5 whitespace-nowrap text-center"><StatusBadge :days="tax.daysRemaining" /></td>
               <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500">{{ tax.createdBy || '-' }}</td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-center">
+              <td v-if="isAdmin" class="px-5 py-3.5 whitespace-nowrap text-center">
                 <div class="inline-flex items-center gap-1.5">
                   <button class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" @click="handleOpenEdit(tax)" title="แก้ไข" type="button">
                     <Edit2 :size="15" />
@@ -505,7 +505,9 @@ import { api } from '../api';
 import StatusBadge from '../components/StatusBadge.vue';
 import Modal from '../components/Modal.vue';
 import AppButton from '../components/AppButton.vue';
+import { useAuth } from '../composables/useAuth';
 
+const { isAdmin } = useAuth();
 const activeDocTab = ref('insurance'); // insurance, prb, tax
 const vehicles = ref([]);
 const insuranceList = ref([]);

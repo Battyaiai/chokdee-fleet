@@ -61,19 +61,27 @@
         />
 
         <SettingsView 
-          v-else-if="currentView === 'settings'"
+          v-else-if="currentView === 'settings' && isAdmin"
           :key="`set-${refreshKey}`"
           @dataReset="handleRefresh"
         />
       </main>
     </div>
+
+    <!-- Admin Login Modal -->
+    <AdminLoginModal
+      :isOpen="isLoginModalOpen"
+      @close="isLoginModalOpen = false"
+      @success="handleLoginSuccess"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import Sidebar from './components/Sidebar.vue';
 import Header from './components/Header.vue';
+import AdminLoginModal from './components/AdminLoginModal.vue';
 import DashboardView from './views/DashboardView.vue';
 import VehiclesView from './views/VehiclesView.vue';
 import DocumentsView from './views/DocumentsView.vue';
@@ -82,12 +90,22 @@ import MaintenanceView from './views/MaintenanceView.vue';
 import ReportsView from './views/ReportsView.vue';
 import SettingsView from './views/SettingsView.vue';
 import { api } from './api';
+import { useAuth } from './composables/useAuth';
 
 const currentView = ref('dashboard');
 const selectedVehicleId = ref(null);
 const alertCount = ref(0);
 const refreshKey = ref(0);
 const isMobileMenuOpen = ref(false);
+
+const { isAdmin, isLoginModalOpen } = useAuth();
+
+// Redirect to dashboard if logged out while on settings
+watch(isAdmin, (newVal) => {
+  if (!newVal && currentView.value === 'settings') {
+    currentView.value = 'dashboard';
+  }
+});
 
 const fetchAlerts = async () => {
   try {
@@ -105,6 +123,10 @@ onMounted(() => {
 });
 
 const handleNavigate = (view) => {
+  if (view === 'settings' && !isAdmin.value) {
+    isLoginModalOpen.value = true;
+    return;
+  }
   if (view !== 'vehicles') {
     selectedVehicleId.value = null;
   }
@@ -123,6 +145,10 @@ const handleRefresh = () => {
   fetchAlerts();
 };
 
+const handleLoginSuccess = () => {
+  handleRefresh();
+};
+
 const handleQuickPrint = () => {
   if (currentView.value !== 'reports') {
     currentView.value = 'reports';
@@ -131,44 +157,45 @@ const handleQuickPrint = () => {
   }
 };
 
-const viewHeaders = {
-  dashboard: {
-    title: 'แดชบอร์ดภาพรวมระบบ',
-    subtitle: 'สรุปข้อมูลรถ เอกสารวันครบกำหนด ค่าใช้จ่าย และรายการแจ้งเตือนด่วน'
-  },
-  vehicles: {
-    title: 'จัดการข้อมูลรถประจำร้าน',
-    subtitle: 'รายชื่อรถ ยี่ห้อ รุ่น ทะเบียน และสถานะการใช้งาน'
-  },
-  documents: {
-    title: 'เอกสารและวันครบกำหนด (ประกัน / พ.ร.บ. / ทะเบียน)',
-    subtitle: 'บันทึกและติดตามวันหมดอายุ ประกันภัย พ.ร.บ. และภาษีประจำปี'
-  },
-  oil: {
-    title: 'ประวัติการเปลี่ยนถ่ายน้ำมันเครื่อง',
-    subtitle: 'บันทึกเลขไมล์ รายการน้ำมัน ค่าใช้จ่าย และนัดหมายรอบถัดไป'
-  },
-  maintenance: {
-    title: 'ประวัติการซ่อมบำรุงและตรวจเช็ก',
-    subtitle: 'บันทึกงานซ่อม อะไหล่ อู่บริการ ค่าใช้จ่าย และประวัติการบำรุงรักษา'
-  },
-  reports: {
-    title: 'รายงานและพิมพ์เอกสาร (PDF / Print A4)',
-    subtitle: 'พิมพ์สรุปข้อมูลรถ รายงานเอกสาร ประวัติซ่อม และสรุปค่าใช้จ่ายตามช่วงเวลา'
-  },
-  settings: {
-    title: 'ตั้งค่าระบบ & แจ้งเตือนผ่าน LINE',
-    subtitle: 'กำหนดเวลาแจ้งเตือนรายวัน คีย์เชื่อมต่อ LINE และตรวจสอบประวัติการส่ง'
-  }
-};
-
 const currentHeader = computed(() => {
-  if (currentView.value === 'vehicles' && selectedVehicleId.value) {
-    return {
-      title: 'รายละเอียดข้อมูลรถ',
-      subtitle: 'ประวัติเอกสาร น้ำมันเครื่อง ซ่อมบำรุง และค่าใช้จ่ายคันนี้'
-    };
+  switch (currentView.value) {
+    case 'dashboard':
+      return {
+        title: 'ภาพรวมระบบยานพาหนะ (Dashboard)',
+        subtitle: 'ร้านโชคดีค้าข้าว - สถานะรถ เอกสาร และการแจ้งเตือน'
+      };
+    case 'vehicles':
+      return {
+        title: selectedVehicleId.value ? 'ข้อมูลรายละเอียดรถและประวัติ' : 'รายการรถยนต์และยานพาหนะทั้งหมด',
+        subtitle: 'จัดการข้อมูลพื้นฐาน เลขทะเบียน และประวัติประจำคัน'
+      };
+    case 'documents':
+      return {
+        title: 'ระบบติดตามเอกสารและวันครบกำหนด',
+        subtitle: 'ประกันภัยภาคสมัครใจ, พ.ร.บ. และภาษีประจำปี'
+      };
+    case 'oil':
+      return {
+        title: 'ประวัติการเปลี่ยนถ่ายน้ำมันเครื่อง',
+        subtitle: 'บันทึกเลขไมล์ วันที่เปลี่ยน และกำหนดรอบถัดไป'
+      };
+    case 'maintenance':
+      return {
+        title: 'บันทึกประวัติการซ่อมบำรุงและค่าใช้จ่าย',
+        subtitle: 'ติดตามงานซ่อม อู่ที่เข้าซ่อม และค่าใช้จ่ายรวม'
+      };
+    case 'reports':
+      return {
+        title: 'รายงานสรุปและพิมพ์เอกสาร (A4 Report)',
+        subtitle: 'พิมพ์รายงานข้อมูลรถ เอกสาร และค่าใช้จ่าย'
+      };
+    case 'settings':
+      return {
+        title: 'ตั้งค่าระบบ & เชื่อมต่อ LINE Notification',
+        subtitle: 'พื้นที่เฉพาะผู้ดูแลระบบ (Admin Only)'
+      };
+    default:
+      return { title: 'ระบบจัดการข้อมูลรถ', subtitle: 'ร้านโชคดีค้าข้าว' };
   }
-  return viewHeaders[currentView.value] || viewHeaders.dashboard;
 });
 </script>

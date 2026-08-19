@@ -37,10 +37,44 @@
         </button>
       </div>
 
+      <!-- User Role Indicator Banner -->
+      <div class="px-3 pt-3">
+        <div 
+          :class="[
+            'p-2.5 rounded-lg text-xs flex items-center justify-between border',
+            isAdmin 
+              ? 'bg-blue-950/50 border-blue-800/80 text-blue-200' 
+              : 'bg-slate-800/60 border-slate-700/60 text-slate-300'
+          ]"
+        >
+          <div class="flex items-center gap-2">
+            <ShieldCheck v-if="isAdmin" :size="15" class="text-blue-400 shrink-0" />
+            <User v-else :size="15" class="text-slate-400 shrink-0" />
+            <span class="font-semibold">{{ isAdmin ? 'โหมดแอดมิน (Admin)' : 'ผู้ใช้งานทั่วไป (ดูอย่างเดียว)' }}</span>
+          </div>
+          <button 
+            v-if="!isAdmin"
+            class="text-[11px] font-bold text-blue-400 hover:text-blue-300 underline"
+            @click="isLoginModalOpen = true"
+            type="button"
+          >
+            เข้าสู่ระบบ
+          </button>
+          <button 
+            v-else
+            class="text-[11px] font-medium text-rose-400 hover:text-rose-300 underline"
+            @click="handleLogout"
+            type="button"
+          >
+            ออก
+          </button>
+        </div>
+      </div>
+
       <!-- Navigation Menu -->
-      <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
+      <nav class="flex-1 px-3 py-3 space-y-1.5 overflow-y-auto">
         <button
-          v-for="item in menuItems"
+          v-for="item in visibleMenuItems"
           :key="item.id"
           :class="[
             'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 text-left select-none',
@@ -64,11 +98,21 @@
 
       <!-- Sidebar Footer -->
       <div class="p-4 border-t border-slate-800 text-xs text-slate-400 space-y-1 bg-slate-950/40 shrink-0 mt-auto">
-        <div class="flex items-center gap-1.5 text-emerald-400 font-medium">
-          <ShieldCheck :size="14" class="text-emerald-400 shrink-0" />
-          <span>ระบบพร้อมใช้งาน</span>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-emerald-400 font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>ระบบออนไลน์</span>
+          </div>
+          <button 
+            v-if="!isAdmin"
+            class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1"
+            @click="isLoginModalOpen = true"
+          >
+            <Lock :size="12" />
+            <span>Admin PIN</span>
+          </button>
         </div>
-        <div class="text-slate-400">เวอร์ชัน 1.0 (ร้านโชคดีค้าข้าว)</div>
+        <div class="text-slate-500">ร้านโชคดีค้าข้าว (CHOKDEE)</div>
       </div>
     </aside>
   </div>
@@ -85,8 +129,11 @@ import {
   Printer, 
   Settings,
   ShieldCheck,
+  User,
+  Lock,
   X
 } from 'lucide-vue-next';
+import { useAuth } from '../composables/useAuth';
 
 const props = defineProps({
   currentView: {
@@ -104,19 +151,31 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['navigate', 'closeMobile']);
+const { isAdmin, isLoginModalOpen, logout } = useAuth();
+
+const menuItems = [
+  { id: 'dashboard', label: 'ภาพรวมระบบ', icon: LayoutDashboard },
+  { id: 'vehicles', label: 'ข้อมูลรถยนต์', icon: Truck },
+  { id: 'documents', label: 'เอกสารและวันหมดอายุ', icon: FileText, badge: props.alertCount },
+  { id: 'oil', label: 'น้ำมันเครื่อง', icon: Droplet },
+  { id: 'maintenance', label: 'ประวัติซ่อมบำรุง', icon: Wrench },
+  { id: 'reports', label: 'รายงาน / พิมพ์', icon: Printer },
+  { id: 'settings', label: 'ตั้งค่า & แจ้งเตือน LINE', icon: Settings, adminOnly: true }
+];
+
+const visibleMenuItems = computed(() => {
+  return menuItems.filter(item => !item.adminOnly || isAdmin.value);
+});
 
 const handleItemClick = (id) => {
   emit('navigate', id);
   emit('closeMobile');
 };
 
-const menuItems = computed(() => [
-  { id: 'dashboard', label: 'แดชบอร์ด', icon: LayoutDashboard, badge: props.alertCount > 0 ? props.alertCount : null },
-  { id: 'vehicles', label: 'ข้อมูลรถ', icon: Truck },
-  { id: 'documents', label: 'ประกัน / พ.ร.บ. / ทะเบียน', icon: FileText, badge: props.alertCount > 0 ? props.alertCount : null },
-  { id: 'oil', label: 'น้ำมันเครื่อง', icon: Droplet },
-  { id: 'maintenance', label: 'ซ่อมบำรุง', icon: Wrench },
-  { id: 'reports', label: 'รายงาน / พิมพ์', icon: Printer },
-  { id: 'settings', label: 'ตั้งค่า & แจ้งเตือน LINE', icon: Settings },
-]);
+const handleLogout = () => {
+  logout();
+  if (props.currentView === 'settings') {
+    emit('navigate', 'dashboard');
+  }
+};
 </script>

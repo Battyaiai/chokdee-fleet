@@ -13,9 +13,23 @@
 
       <!-- Page Title & Subtitle -->
       <div class="min-w-0">
-        <h1 class="text-lg sm:text-xl font-bold text-slate-900 truncate leading-tight">
-          {{ title }}
-        </h1>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h1 class="text-lg sm:text-xl font-bold text-slate-900 truncate leading-tight">
+            {{ title }}
+          </h1>
+          <span 
+            :class="[
+              'px-2.5 py-0.5 rounded-full text-xs font-semibold border inline-flex items-center gap-1',
+              isAdmin 
+                ? 'bg-blue-50 text-blue-800 border-blue-200' 
+                : 'bg-slate-100 text-slate-600 border-slate-200'
+            ]"
+          >
+            <ShieldCheck v-if="isAdmin" :size="13" class="text-blue-600" />
+            <Eye v-else :size="13" class="text-slate-500" />
+            <span>{{ isAdmin ? 'โหมดผู้ดูแล (Admin)' : 'โหมดดูอย่างเดียว' }}</span>
+          </span>
+        </div>
         <p v-if="subtitle" class="text-xs sm:text-sm text-slate-500 truncate mt-0.5">
           {{ subtitle }}
         </p>
@@ -24,6 +38,28 @@
 
     <!-- Right Controls -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <!-- Admin Login / Logout Button -->
+      <AppButton 
+        v-if="!isAdmin"
+        variant="secondary" 
+        size="sm"
+        @click="isLoginModalOpen = true" 
+        title="เข้าสู่ระบบ Admin เพื่อแก้ไขข้อมูล"
+      >
+        <Lock :size="14" />
+        <span class="hidden sm:inline">เข้าสู่ระบบ Admin</span>
+      </AppButton>
+      <AppButton 
+        v-else
+        variant="secondary" 
+        size="sm"
+        @click="logout" 
+        title="ออกจากระบบ Admin"
+      >
+        <LogOut :size="14" class="text-rose-600" />
+        <span class="hidden sm:inline text-rose-700 font-semibold">ออกจาก Admin</span>
+      </AppButton>
+
       <!-- Quick Print Button -->
       <AppButton 
         v-if="showQuickPrint" 
@@ -50,18 +86,19 @@
       <!-- Alert Count Badge -->
       <div 
         v-if="alertCount > 0" 
-        class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-200"
+        class="hidden xl:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-200"
       >
         <Bell :size="14" class="text-orange-600" />
-        <span>มี {{ alertCount }} รายการใกล้ครบกำหนด</span>
+        <span>มี {{ alertCount }} รายการเตือน</span>
       </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { Bell, RefreshCw, Printer, Menu } from 'lucide-vue-next';
+import { Bell, RefreshCw, Printer, Menu, Lock, LogOut, ShieldCheck, Eye } from 'lucide-vue-next';
 import AppButton from './AppButton.vue';
+import { useAuth } from '../composables/useAuth';
 
 defineProps({
   title: {
@@ -83,4 +120,5 @@ defineProps({
 });
 
 const emit = defineEmits(['refresh', 'quickPrint', 'openMobile']);
+const { isAdmin, isLoginModalOpen, logout } = useAuth();
 </script>

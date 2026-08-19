@@ -354,7 +354,48 @@
       </div>
     </div>
 
-    <!-- 5. Danger Zone / Reset -->
+    <!-- 5. Admin Security Section -->
+    <div class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
+      <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+        <KeyRound :size="18" class="text-blue-600" />
+        <h4 class="text-base font-bold text-slate-900">
+          ความปลอดภัยและรหัสผ่าน Admin PIN
+        </h4>
+      </div>
+
+      <form @submit.prevent="handleChangePin" class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 items-end">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">รหัส PIN เดิม <span class="text-rose-500">*</span></label>
+          <input
+            type="password"
+            class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+            v-model="oldPinInput"
+            placeholder="รหัส PIN เดิม (ค่าเริ่มต้น: 8888)"
+            required
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">รหัส PIN ใหม่ <span class="text-rose-500">*</span></label>
+          <input
+            type="password"
+            class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+            v-model="newPinInput"
+            placeholder="ตั้งรหัส PIN ใหม่ (อย่างน้อย 4 ตัว)"
+            required
+          />
+        </div>
+        <div>
+          <AppButton type="submit" variant="primary" size="md">
+            <span>เปลี่ยนรหัส PIN</span>
+          </AppButton>
+        </div>
+      </form>
+      <div v-if="pinFeedback" :class="['text-xs p-2.5 rounded-lg border', pinFeedback.success ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200']">
+        {{ pinFeedback.message }}
+      </div>
+    </div>
+
+    <!-- 6. Danger Zone / Reset -->
     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="space-y-1">
         <h4 class="text-sm font-bold text-slate-900">
@@ -383,8 +424,24 @@ import {
   BellRing,
   Database,
   Users,
-  Info
+  Info,
+  KeyRound
 } from 'lucide-vue-next';
+import { useAuth } from '../composables/useAuth';
+
+const { updatePin } = useAuth();
+const oldPinInput = ref('');
+const newPinInput = ref('');
+const pinFeedback = ref(null);
+
+const handleChangePin = () => {
+  const result = updatePin(oldPinInput.value, newPinInput.value);
+  pinFeedback.value = result;
+  if (result.success) {
+    oldPinInput.value = '';
+    newPinInput.value = '';
+  }
+};
 import { api } from '../api';
 import StatusBadge from '../components/StatusBadge.vue';
 import AppButton from '../components/AppButton.vue';

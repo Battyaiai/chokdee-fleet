@@ -32,7 +32,7 @@
           </p>
         </div>
 
-        <div>
+        <div v-if="isAdmin">
           <AppButton variant="secondary" size="sm" @click="handleOpenEdit(detailVehicle)">
             <Edit2 :size="14" />
             <span>แก้ไขข้อมูลรถ</span>
@@ -430,15 +430,17 @@
             <option value="inactive">ไม่ได้ใช้งาน</option>
           </select>
 
-          <AppButton variant="secondary" size="md" @click="handleOpenBulk">
-            <FileSpreadsheet :size="16" />
-            <span>นำเข้าจาก Excel / หลายคัน</span>
-          </AppButton>
+          <div v-if="isAdmin" class="flex items-center gap-2">
+            <AppButton variant="secondary" size="md" @click="handleOpenBulk">
+              <FileSpreadsheet :size="16" />
+              <span>นำเข้าจาก Excel / หลายคัน</span>
+            </AppButton>
 
-          <AppButton variant="primary" size="md" @click="handleOpenAdd">
-            <Plus :size="16" />
-            <span>เพิ่มรถใหม่</span>
-          </AppButton>
+            <AppButton variant="primary" size="md" @click="handleOpenAdd">
+              <Plus :size="16" />
+              <span>เพิ่มรถใหม่</span>
+            </AppButton>
+          </div>
         </div>
       </div>
 
@@ -512,6 +514,7 @@
                       <span>ดูประวัติ</span>
                     </AppButton>
                     <button 
+                      v-if="isAdmin"
                       class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
                       @click="handleOpenEdit(v)"
                       title="แก้ไขข้อมูล"
@@ -520,6 +523,7 @@
                       <Edit2 :size="15" />
                     </button>
                     <button 
+                      v-if="isAdmin"
                       class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
                       @click="handleDeleteVehicle(v)"
                       title="ลบข้อมูลรถ"
@@ -827,6 +831,7 @@ import { api } from '../api';
 import StatusBadge from '../components/StatusBadge.vue';
 import Modal from '../components/Modal.vue';
 import AppButton from '../components/AppButton.vue';
+import { useAuth } from '../composables/useAuth';
 
 const props = defineProps({
   selectedVehicleId: {
@@ -836,6 +841,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['selectVehicle', 'clearSelectedVehicle']);
+const { isAdmin } = useAuth();
 
 const vehicles = ref([]);
 const loading = ref(true);

@@ -51,7 +51,7 @@
           </option>
         </select>
 
-        <AppButton variant="primary" size="md" @click="handleOpenAdd">
+        <AppButton v-if="isAdmin" variant="primary" size="md" @click="handleOpenAdd">
           <Plus :size="16" />
           <span class="whitespace-nowrap">บันทึกเปลี่ยนน้ำมันเครื่อง</span>
         </AppButton>
@@ -73,7 +73,7 @@
               <th class="px-5 py-3">นัดครั้งต่อไป</th>
               <th class="px-5 py-3 text-right">เลขไมล์เป้าหมาย</th>
               <th class="px-5 py-3">ผู้บันทึก</th>
-              <th class="px-5 py-3 text-center">จัดการ</th>
+              <th v-if="isAdmin" class="px-5 py-3 text-center">จัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -120,7 +120,7 @@
                 {{ rec.nextMileage ? `${rec.nextMileage.toLocaleString()} กม.` : '-' }}
               </td>
               <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500">{{ rec.createdBy || '-' }}</td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-center">
+              <td v-if="isAdmin" class="px-5 py-3.5 whitespace-nowrap text-center">
                 <div class="inline-flex items-center gap-1.5">
                   <button class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" @click="handleOpenEdit(rec)" title="แก้ไข" type="button">
                     <Edit2 :size="15" />
@@ -283,7 +283,9 @@ import {
 import { api } from '../api';
 import Modal from '../components/Modal.vue';
 import AppButton from '../components/AppButton.vue';
+import { useAuth } from '../composables/useAuth';
 
+const { isAdmin } = useAuth();
 const records = ref([]);
 const vehicles = ref([]);
 const loading = ref(true);
