@@ -9,35 +9,38 @@
             เลือกประเภทรายงานและเงื่อนไขการออกรายงาน
           </h3>
         </div>
-        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
           <AppButton 
             variant="primary" 
-            size="sm" 
+            size="md" 
+            class="flex-1 sm:flex-initial justify-center shadow-sm"
             @click="handleDownloadPDF"
             :loading="generatingPdf"
             title="ดาวน์โหลดเป็นไฟล์ PDF ลงมือถือ/คอมพิวเตอร์โดยตรง"
           >
-            <FileDown :size="15" />
-            <span>{{ generatingPdf ? 'กำลังสร้าง PDF...' : 'ดาวน์โหลด PDF' }}</span>
+            <FileDown :size="16" />
+            <span class="font-bold">{{ generatingPdf ? 'กำลังสร้าง PDF...' : '📥 ดาวน์โหลด PDF' }}</span>
           </AppButton>
 
           <AppButton 
             variant="secondary" 
-            size="sm" 
+            size="md" 
+            class="flex-1 sm:flex-initial justify-center"
             @click="handleExportCSV"
             title="ดาวน์โหลดข้อมูลเป็นไฟล์ Excel (.csv)"
           >
-            <FileSpreadsheet :size="15" />
-            <span class="hidden sm:inline">ส่งออก Excel</span>
+            <FileSpreadsheet :size="16" />
+            <span>ส่งออก Excel</span>
           </AppButton>
 
           <AppButton 
             variant="secondary" 
-            size="sm" 
+            size="md" 
+            class="hidden sm:inline-flex"
             @click="handlePrint"
             title="เปิดหน้าต่างพิมพ์เอกสาร A4 (สำหรับคอมพิวเตอร์)"
           >
-            <Printer :size="15" />
+            <Printer :size="16" />
             <span>พิมพ์ A4</span>
           </AppButton>
         </div>

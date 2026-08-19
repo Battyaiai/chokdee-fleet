@@ -79,14 +79,24 @@ watch(() => props.isOpen, (newVal) => {
   }
 });
 
-const handleLogin = () => {
-  const result = login(pinInput.value);
-  if (result.success) {
+const loading = ref(false);
+
+const handleLogin = async () => {
+  try {
+    loading.value = true;
     errorMsg.value = '';
-    emit('success');
-    emit('close');
-  } else {
-    errorMsg.value = result.message;
+    const result = await login(pinInput.value);
+    if (result.success) {
+      errorMsg.value = '';
+      emit('success');
+      emit('close');
+    } else {
+      errorMsg.value = result.message;
+    }
+  } catch (err) {
+    errorMsg.value = err.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
+  } finally {
+    loading.value = false;
   }
 };
 </script>

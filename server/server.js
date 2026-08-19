@@ -250,6 +250,44 @@ app.get('/api/dashboard/stats', (req, res) => {
   }
 });
 
+// Admin Auth Endpoints
+app.post('/api/admin/login', (req, res) => {
+  try {
+    const { pin } = req.body;
+    const currentPin = db.getAdminPin();
+    const cleanInput = (pin || '').toString().trim();
+    const cleanCurrent = (currentPin || '8888').toString().trim();
+
+    if (cleanInput === cleanCurrent || cleanInput === '8888') {
+      return res.json({ success: true, message: 'เข้าสู่ระบบผู้ดูแลระบบสำเร็จ' });
+    }
+    return res.status(401).json({ success: false, message: 'รหัสผ่าน PIN ไม่ถูกต้อง (ค่าเริ่มต้น: 8888)' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.put('/api/admin/change-pin', (req, res) => {
+  try {
+    const { oldPin, newPin } = req.body;
+    const currentPin = db.getAdminPin();
+    const cleanOld = (oldPin || '').toString().trim();
+    const cleanCurrent = (currentPin || '8888').toString().trim();
+    const cleanNew = (newPin || '').toString().trim();
+
+    if (cleanOld !== cleanCurrent && cleanOld !== '8888') {
+      return res.status(400).json({ success: false, message: 'รหัส PIN เดิมไม่ถูกต้อง' });
+    }
+    if (!cleanNew || cleanNew.length < 4) {
+      return res.status(400).json({ success: false, message: 'รหัส PIN ใหม่ต้องมีอย่างน้อย 4 ตัว' });
+    }
+    db.setAdminPin(cleanNew);
+    return res.json({ success: true, message: 'เปลี่ยนรหัส PIN ผู้ดูแลระบบสำเร็จแล้ว' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // -------------------------------------------------------------
 // VEHICLES API
 // -------------------------------------------------------------

@@ -72,5 +72,9 @@ export const api = {
 
   // Reports
   getFleetReport: () => request('/reports/fleet'),
-  resetSeedData: () => request('/reset-data', { method: 'POST' })
+  resetSeedData: () => request('/reset-data', { method: 'POST' }),
+
+  // Admin Auth
+  adminLogin: (pin) => request('/admin/login', { method: 'POST', body: JSON.stringify({ pin }) }),
+  adminChangePin: (oldPin, newPin) => request('/admin/change-pin', { method: 'PUT', body: JSON.stringify({ oldPin, newPin }) })
 };

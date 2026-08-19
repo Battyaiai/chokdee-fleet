@@ -314,6 +314,18 @@ export const db = {
     return data.line_settings;
   },
 
+  // Admin PIN Auth
+  getAdminPin() {
+    const data = loadDB();
+    return data.adminPin || '8888';
+  },
+  setAdminPin(newPin) {
+    const data = loadDB();
+    data.adminPin = newPin;
+    saveDB(data);
+    return true;
+  },
+
   // LINE Logs
   getLineLogs() {
     const data = loadDB();
