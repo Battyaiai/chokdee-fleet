@@ -338,6 +338,72 @@ app.post('/api/vehicles', (req, res) => {
   }
 });
 
+app.post('/api/vehicles/bulk', (req, res) => {
+  try {
+    const list = Array.isArray(req.body) ? req.body : (req.body.vehicles || []);
+    const createdList = [];
+    for (const item of list) {
+      if (!item.plateNumber) continue;
+      const v = db.createVehicle({
+        code: item.code,
+        name: item.name || '',
+        type: item.type || 'รถกระบะ',
+        brand: item.brand || '',
+        model: item.model || '',
+        color: item.color || '',
+        plateNumber: item.plateNumber,
+        province: item.province || 'นครปฐม',
+        year: item.year || '',
+        vin: item.vin || '',
+        engineNo: item.engineNo || '',
+        status: item.status || 'active',
+        notes: item.notes || '',
+        createdBy: item.createdBy || 'นำเข้าข้อมูลด่วน'
+      });
+      createdList.push(v);
+
+      if (item.insuranceEndDate) {
+        db.createInsuranceDoc({
+          vehicleId: v.id,
+          company: item.insuranceCompany || 'ประกันภัย',
+          policyNumber: item.insurancePolicy || '',
+          startDate: item.insuranceStartDate || '',
+          endDate: item.insuranceEndDate,
+          premiumAmount: Number(item.insuranceCost) || 0,
+          notes: 'นำเข้าข้อมูลพร้อมรถ',
+          createdBy: item.createdBy || 'นำเข้าข้อมูลด่วน'
+        });
+      }
+      if (item.prbEndDate) {
+        db.createPrbDoc({
+          vehicleId: v.id,
+          prbNumber: item.prbNumber || '',
+          startDate: item.prbStartDate || '',
+          endDate: item.prbEndDate,
+          cost: Number(item.prbCost) || 0,
+          notes: 'นำเข้าข้อมูลพร้อมรถ',
+          createdBy: item.createdBy || 'นำเข้าข้อมูลด่วน'
+        });
+      }
+      if (item.taxExpireDate) {
+        db.createTaxDoc({
+          vehicleId: v.id,
+          plateNumber: v.plateNumber,
+          province: v.province,
+          lastRenewalDate: item.taxLastRenewalDate || '',
+          expireDate: item.taxExpireDate,
+          cost: Number(item.taxCost) || 0,
+          notes: 'นำเข้าข้อมูลพร้อมรถ',
+          createdBy: item.createdBy || 'นำเข้าข้อมูลด่วน'
+        });
+      }
+    }
+    res.status(201).json({ success: true, count: createdList.length, data: createdList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.put('/api/vehicles/:id', (req, res) => {
   try {
     const updated = db.updateVehicle(req.params.id, req.body);

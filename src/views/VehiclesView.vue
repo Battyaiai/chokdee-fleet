@@ -430,6 +430,11 @@
             <option value="inactive">ไม่ได้ใช้งาน</option>
           </select>
 
+          <AppButton variant="secondary" size="md" @click="handleOpenBulk">
+            <FileSpreadsheet :size="16" />
+            <span>นำเข้าจาก Excel / หลายคัน</span>
+          </AppButton>
+
           <AppButton variant="primary" size="md" @click="handleOpenAdd">
             <Plus :size="16" />
             <span>เพิ่มรถใหม่</span>
@@ -706,6 +711,97 @@
         </div>
       </form>
     </Modal>
+
+    <!-- Bulk Import Modal -->
+    <Modal
+      :isOpen="isBulkModalOpen"
+      @close="isBulkModalOpen = false"
+      title="นำเข้าข้อมูลรถจาก Excel / หลายคันพร้อมกัน"
+    >
+      <div class="space-y-4">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3.5 text-xs text-slate-700 space-y-1.5">
+          <div class="font-bold text-blue-900 flex items-center justify-between">
+            <span>💡 วิธีนำเข้าข้อมูลด่วนจาก Excel / ตาราง:</span>
+            <button 
+              type="button" 
+              class="text-blue-700 underline font-semibold hover:text-blue-900"
+              @click="insertSampleBulkText"
+            >
+              คลิกเพื่อใส่ตัวอย่างข้อมูล
+            </button>
+          </div>
+          <p>
+            คัดลอกตารางจาก <strong>Excel</strong> หรือพิมพ์ 1 บรรทัดต่อ 1 คัน โดยคั่นด้วยเครื่องหมายจุลภาค <code>,</code> หรือแท็บ (Tab):
+          </p>
+          <div class="font-mono bg-white p-2 rounded border border-blue-100 text-[11px] text-slate-800">
+            รหัสรถ, ทะเบียน, จังหวัด, ยี่ห้อ, รุ่น, ประเภทรถ, วันหมดประกัน, วันต่อภาษี, วันหมดพรบ
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">
+            วางข้อมูลรถที่นี่ (คัดลอกจาก Excel ได้เลย)
+          </label>
+          <textarea
+            class="w-full h-36 px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+            v-model="bulkText"
+            placeholder="CK-06, 70-5555, นครปฐม, Isuzu, Forward, รถบรรทุก 6 ล้อ, 2026-12-01, 2026-11-15, 2026-12-01&#10;CK-07, 72-1234, นครปฐม, Hino, 500, รถบรรทุก 10 ล้อ, 2026-10-10, 2026-10-15, 2026-10-10"
+            @input="parseBulkText"
+          />
+        </div>
+
+        <!-- Preview Table -->
+        <div v-if="parsedBulkList.length > 0" class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800">
+              ตัวอย่างรายการที่จะนำเข้า ({{ parsedBulkList.length }} คัน):
+            </span>
+            <span class="text-xs text-emerald-600 font-semibold">✓ ตรวจสอบข้อมูลเรียบร้อย</span>
+          </div>
+
+          <div class="max-h-48 overflow-y-auto border border-slate-200 rounded-lg">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 sticky top-0">
+                <tr>
+                  <th class="p-2">รหัส</th>
+                  <th class="p-2">ทะเบียน</th>
+                  <th class="p-2">จังหวัด</th>
+                  <th class="p-2">ยี่ห้อ/รุ่น</th>
+                  <th class="p-2">ประกัน</th>
+                  <th class="p-2">ภาษี</th>
+                  <th class="p-2">พ.ร.บ.</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tr v-for="(item, idx) in parsedBulkList" :key="idx" class="hover:bg-slate-50">
+                  <td class="p-2 font-bold text-blue-600">{{ item.code }}</td>
+                  <td class="p-2 font-bold font-mono">{{ item.plateNumber }}</td>
+                  <td class="p-2">{{ item.province }}</td>
+                  <td class="p-2">{{ item.brand }} {{ item.model }}</td>
+                  <td class="p-2">{{ item.insuranceEndDate || '-' }}</td>
+                  <td class="p-2">{{ item.taxExpireDate || '-' }}</td>
+                  <td class="p-2">{{ item.prbEndDate || '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-200">
+          <AppButton variant="secondary" @click="isBulkModalOpen = false">
+            ยกเลิก
+          </AppButton>
+          <AppButton 
+            variant="primary" 
+            :disabled="parsedBulkList.length === 0" 
+            :loading="bulkSaving"
+            @click="handleSaveBulk"
+          >
+            {{ bulkSaving ? 'กำลังนำเข้า...' : `ยืนยันนำเข้าข้อมูล (${parsedBulkList.length} คัน)` }}
+          </AppButton>
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -724,7 +820,8 @@ import {
   Wrench, 
   DollarSign, 
   Info, 
-  FileCheck
+  FileCheck,
+  FileSpreadsheet
 } from 'lucide-vue-next';
 import { api } from '../api';
 import StatusBadge from '../components/StatusBadge.vue';
@@ -752,8 +849,91 @@ const activeTab = ref('info');
 
 // Modal State
 const isModalOpen = ref(false);
+const isBulkModalOpen = ref(false);
 const editingId = ref(null);
 const saving = ref(false);
+const bulkSaving = ref(false);
+const bulkText = ref('');
+const parsedBulkList = ref([]);
+
+const handleOpenBulk = () => {
+  bulkText.value = '';
+  parsedBulkList.value = [];
+  isBulkModalOpen.value = true;
+};
+
+const insertSampleBulkText = () => {
+  bulkText.value = `CK-06, 70-5555, นครปฐม, Isuzu, Forward FRR 210, รถบรรทุก 6 ล้อ, 2026-12-01, 2026-11-15, 2026-12-01
+CK-07, 72-1234, นครปฐม, Hino, 500 FL8J, รถบรรทุก 10 ล้อ, 2026-10-10, 2026-10-15, 2026-10-10
+CK-08, 1ฒม 3344, กรุงเทพมหานคร, Toyota, Hilux Revo, รถกระบะตอนเดียว, 2026-11-20, 2026-12-05, 2026-11-20`;
+  parseBulkText();
+};
+
+const parseBulkText = () => {
+  if (!bulkText.value.trim()) {
+    parsedBulkList.value = [];
+    return;
+  }
+
+  const lines = bulkText.value.trim().split('\n');
+  const result = [];
+
+  lines.forEach((line, index) => {
+    if (!line.trim()) return;
+    // Split by tab or comma
+    const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+    const clean = parts.map(p => p.trim());
+
+    if (clean.length >= 2) {
+      const code = clean[0] || `CK-${String(vehicles.value.length + index + 1).padStart(2, '0')}`;
+      const plate = clean[1] || '';
+      const province = clean[2] || 'นครปฐม';
+      const brand = clean[3] || 'Isuzu';
+      const model = clean[4] || '';
+      const type = clean[5] || 'รถกระบะตอนเดียว';
+      const insExp = clean[6] || '';
+      const taxExp = clean[7] || '';
+      const prbExp = clean[8] || '';
+
+      if (plate) {
+        result.push({
+          code,
+          plateNumber: plate,
+          province,
+          brand,
+          model,
+          type,
+          name: `${brand} ${model}`.trim(),
+          status: 'active',
+          insuranceEndDate: insExp,
+          taxExpireDate: taxExp,
+          prbEndDate: prbExp,
+          createdBy: 'นำเข้าข้อมูลด่วน'
+        });
+      }
+    }
+  });
+
+  parsedBulkList.value = result;
+};
+
+const handleSaveBulk = async () => {
+  if (parsedBulkList.value.length === 0) return;
+
+  try {
+    bulkSaving.value = true;
+    const res = await api.bulkCreateVehicles(parsedBulkList.value);
+    if (res.success) {
+      alert(`นำเข้าข้อมูลรถสำเร็จเรียบร้อยแล้ว จำนวน ${res.count} คัน!`);
+      isBulkModalOpen.value = false;
+      await loadVehicles();
+    }
+  } catch (err) {
+    alert('เกิดข้อผิดพลาดในการนำเข้า: ' + err.message);
+  } finally {
+    bulkSaving.value = false;
+  }
+};
 const formData = ref({
   code: '',
   name: '',

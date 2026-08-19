@@ -28,6 +28,7 @@ export const api = {
   getVehicles: () => request('/vehicles'),
   getVehicle: (id) => request(`/vehicles/${id}`),
   createVehicle: (data) => request('/vehicles', { method: 'POST', body: JSON.stringify(data) }),
+  bulkCreateVehicles: (data) => request('/vehicles/bulk', { method: 'POST', body: JSON.stringify(data) }),
   updateVehicle: (id, data) => request(`/vehicles/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteVehicle: (id) => request(`/vehicles/${id}`, { method: 'DELETE' }),
 
