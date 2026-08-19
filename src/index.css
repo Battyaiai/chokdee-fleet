@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Prompt', 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased font-sans leading-normal;
+    min-height: 100vh;
+  }
+
+  /* Smooth Thai typography without text clipping */
+  table th, table td {
+    line-height: 1.5;
+  }
+}
+
+/* ==========================================================================
+   A4 Print Stylesheet (Clean, No Cutoff, Full Width, No Scrollbars)
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 8mm 8mm 8mm;
+  }
+
+  *, *::before, *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html, body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 9.5pt !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Remove all scrollbars and forced width constraints */
+  .overflow-x-auto,
+  div,
+  main,
+  section,
+  aside,
+  header {
+    overflow: visible !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Table full-width A4 fitting */
+  table {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: collapse !important;
+    font-size: 8.5pt !important;
+  }
+
+  table th,
+  table td {
+    padding: 4px 4px !important;
+    font-size: 8.5pt !important;
+    line-height: 1.25 !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  table thead th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #94a3b8 !important;
+  }
+
+  /* Hide UI elements on print */
+  .no-print,
+  button,
+  nav,
+  aside,
+  select,
+  input,
+  header {
+    display: none !important;
+  }
+
+  /* Printable Header */
+  .print-only-header {
+    display: block !important;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 6px;
+  }
+
+  /* Status Badge compact print */
+  span {
+    white-space: normal !important;
+  }
+}
