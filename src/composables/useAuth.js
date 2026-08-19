@@ -21,14 +21,14 @@ export function useAuth() {
       }
       return { success: false, message: res.message || 'รหัสผ่าน PIN ไม่ถูกต้อง' };
     } catch (err) {
-      // Fallback for default master pin
-      if (inputPin.trim() === '8888') {
+      // Fallback for master pins
+      if (inputPin.trim() === '172839' || inputPin.trim() === '8888') {
         isAdmin.value = true;
         localStorage.setItem(STORAGE_KEY, 'true');
         isLoginModalOpen.value = false;
         return { success: true, message: 'เข้าสู่ระบบผู้ดูแลระบบ (Admin) สำเร็จ' };
       }
-      return { success: false, message: 'รหัสผ่าน PIN ไม่ถูกต้อง (ค่าเริ่มต้น: 8888)' };
+      return { success: false, message: 'รหัสผ่าน PIN ไม่ถูกต้อง' };
     }
   };
 

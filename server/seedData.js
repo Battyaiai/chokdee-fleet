@@ -383,5 +383,6 @@ export const initialSeedData = {
       status: "sent",
       errorMessage: null
     }
-  ]
+  ],
+  adminPin: "172839"
 };

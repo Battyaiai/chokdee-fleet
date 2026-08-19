@@ -317,7 +317,7 @@ export const db = {
   // Admin PIN Auth
   getAdminPin() {
     const data = loadDB();
-    return data.adminPin || '8888';
+    return data.adminPin || '172839';
   },
   setAdminPin(newPin) {
     const data = loadDB();
