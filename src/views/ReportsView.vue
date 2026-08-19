@@ -16,7 +16,7 @@
             class="flex-1 sm:flex-initial justify-center shadow-sm"
             @click="handleDownloadPDF"
             :loading="generatingPdf"
-            title="ดาวน์โหลดเป็นไฟล์ PDF ลงมือถือ/คอมพิวเตอร์โดยตรง"
+            title="ดาวน์โหลดเป็นไฟล์ PDF คุณภาพสูง A4"
           >
             <FileDown :size="16" />
             <span class="font-bold">{{ generatingPdf ? 'กำลังสร้าง PDF...' : '📥 ดาวน์โหลด PDF' }}</span>
@@ -94,62 +94,79 @@
       </div>
     </div>
 
-    <!-- Printable & PDF Target Container -->
-    <div id="report-printable-area" class="bg-white border border-slate-200 rounded-xl p-4 sm:p-6 shadow-xs space-y-4 print:border-none print:shadow-none print:p-0">
+    <!-- Printable & PDF Target Container (Fully Styled) -->
+    <div 
+      id="report-printable-area" 
+      class="bg-white border border-slate-300 rounded-xl p-5 sm:p-7 shadow-xs space-y-4 print:border-none print:shadow-none print:p-0 font-sans"
+      style="font-family: 'Sarabun', 'Prompt', sans-serif;"
+    >
       <!-- Printable Sheet Header -->
-      <div class="border-b-2 border-slate-900 pb-3 mb-2">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-lg sm:text-xl font-bold text-slate-950 tracking-tight">
-              ร้านโชคดีค้าข้าว (CHOKDEE RICE TRADING)
-            </h2>
-            <p class="text-xs text-slate-600 mt-0.5">
-              รายงานระบบจัดการข้อมูลรถยนต์และยานพาหนะ | ออกเมื่อ: {{ printDate }}
-            </p>
-          </div>
-          <div class="text-right text-xs font-semibold text-slate-700">
-            <div>เอกสารทางการภายในร้าน</div>
-            <div>พิมพ์เพื่อการตรวจสอบ</div>
-          </div>
+      <div class="border-b-2 border-slate-900 pb-3 mb-3 flex items-start justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-950 tracking-tight" style="color: #0f172a; font-size: 18px; font-weight: 700;">
+            ร้านโชคดีค้าข้าว (CHOKDEE RICE TRADING)
+          </h2>
+          <p class="text-xs text-slate-600 mt-1" style="color: #475569; font-size: 12px;">
+            รายงานระบบจัดการข้อมูลรถยนต์และยานพาหนะ | ออกเมื่อ: {{ printDate }}
+          </p>
+        </div>
+        <div class="text-right text-xs font-semibold" style="color: #334155; font-size: 11px; text-align: right;">
+          <div>เอกสารทางการภายในร้าน</div>
+          <div style="color: #2563eb; font-weight: 600;">พิมพ์เพื่อการตรวจสอบ</div>
         </div>
       </div>
 
       <!-- -------------------------------------------------------------
           REPORT 1: FLEET SUMMARY
           ------------------------------------------------------------- -->
-      <div v-if="reportType === 'fleet'" class="space-y-2">
+      <div v-if="reportType === 'fleet'" class="space-y-3">
         <div class="flex items-center justify-between pb-1">
-          <h3 class="text-sm sm:text-base font-bold text-slate-900">
+          <h3 class="text-sm sm:text-base font-bold" style="color: #0f172a; font-size: 14px; font-weight: 700;">
             1. รายงานข้อมูลรถทั้งหมด ร้านโชคดีค้าข้าว (จำนวน {{ activeVehicles.length }} คัน)
           </h3>
         </div>
-        <div class="overflow-x-auto print:overflow-visible">
-          <table class="w-full text-left text-sm border-collapse min-w-[850px] print:min-w-0 print:w-full print:text-xs">
-            <thead class="bg-slate-100 text-xs font-semibold text-slate-700 uppercase border-b border-slate-200">
-              <tr>
-                <th class="px-3 py-2">รหัส</th>
-                <th class="px-3 py-2">ทะเบียน / จังหวัด</th>
-                <th class="px-3 py-2">ยี่ห้อ - รุ่น</th>
-                <th class="px-3 py-2">ประเภทรถ</th>
-                <th class="px-3 py-2 text-center">ปี</th>
-                <th class="px-3 py-2 font-mono">เลขตัวถัง</th>
-                <th class="px-3 py-2 text-center">สถานะ</th>
-                <th class="px-3 py-2">ผู้บันทึก</th>
+        <div class="overflow-x-auto">
+          <table 
+            class="w-full text-left text-xs border-collapse" 
+            style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #94a3b8;"
+          >
+            <thead>
+              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8;">
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 65px;">รหัส</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน / จังหวัด</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">ยี่ห้อ - รุ่น</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">ประเภทรถ</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 50px;">ปี</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 140px;">เลขตัวถัง (VIN)</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 85px;">สถานะ</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 120px;">ผู้บันทึก</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 text-slate-700">
-              <tr v-for="v in activeVehicles" :key="v.id" class="hover:bg-slate-50/80">
-                <td class="px-3 py-2.5 font-bold text-blue-600 whitespace-nowrap">{{ v.code }}</td>
-                <td class="px-3 py-2.5 whitespace-nowrap">
-                  <div class="font-bold font-mono text-slate-900">{{ v.plateNumber }}</div>
-                  <div class="text-xs text-slate-500">{{ v.province }}</div>
+            <tbody>
+              <tr 
+                v-for="(v, idx) in activeVehicles" 
+                :key="v.id" 
+                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
+              >
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb;">{{ v.code }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">
+                  <div style="font-weight: 700; color: #0f172a; font-family: monospace;">{{ v.plateNumber }}</div>
+                  <div style="font-size: 10px; color: #64748b;">{{ v.province }}</div>
                 </td>
-                <td class="px-3 py-2.5 font-semibold text-slate-800">{{ v.brand }} {{ v.model }}</td>
-                <td class="px-3 py-2.5 text-xs text-slate-600">{{ v.type }}</td>
-                <td class="px-3 py-2.5 text-center text-xs">{{ v.year || '-' }}</td>
-                <td class="px-3 py-2.5 font-mono text-xs text-slate-500">{{ v.vin || '-' }}</td>
-                <td class="px-3 py-2.5 text-center"><StatusBadge :status="v.status" type="vehicleStatus" /></td>
-                <td class="px-3 py-2.5 text-xs text-slate-500">{{ v.createdBy || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 600; color: #1e293b;">{{ v.brand }} {{ v.model }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #334155;">{{ v.type }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; color: #475569;">{{ v.year || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 10.5px; color: #475569;">{{ v.vin || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center;">
+                  <span 
+                    :style="v.status === 'active' 
+                      ? 'background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;' 
+                      : 'background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 9999px; font-size: 10px;'"
+                  >
+                    {{ v.status === 'active' ? 'ใช้งานอยู่' : 'ซ่อม/พัก' }}
+                  </span>
+                </td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px;">{{ v.createdBy || '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -159,36 +176,55 @@
       <!-- -------------------------------------------------------------
           REPORT 2: DOCS EXPIRY STATUS
           ------------------------------------------------------------- -->
-      <div v-else-if="reportType === 'docs'" class="space-y-2">
+      <div v-else-if="reportType === 'docs'" class="space-y-3">
         <div class="flex items-center justify-between pb-1">
-          <h3 class="text-sm sm:text-base font-bold text-slate-900">
-            2. รายงานสถานะเอกสาร ประกันภัย / พ.ร.บ. / ต่อทะเบียน
+          <h3 class="text-sm sm:text-base font-bold" style="color: #0f172a; font-size: 14px; font-weight: 700;">
+            2. รายงานสถานะเอกสาร ประกันภัย / พ.ร.บ. / ต่อทะเบียน (จำนวน {{ activeDocs.length }} รายการ)
           </h3>
         </div>
-        <div class="overflow-x-auto print:overflow-visible">
-          <table class="w-full text-left text-sm border-collapse min-w-[850px] print:min-w-0 print:w-full print:text-xs">
-            <thead class="bg-slate-100 text-xs font-semibold text-slate-700 uppercase border-b border-slate-200">
-              <tr>
-                <th class="px-3 py-2">รถ / รหัส</th>
-                <th class="px-3 py-2">ทะเบียน</th>
-                <th class="px-3 py-2">ประเภทเอกสาร</th>
-                <th class="px-3 py-2">เลขที่ / บริษัท</th>
-                <th class="px-3 py-2">วันหมดอายุ / ครบกำหนด</th>
-                <th class="px-3 py-2 text-right">ค่าใช้จ่าย</th>
-                <th class="px-3 py-2 text-center">สถานะ</th>
-                <th class="px-3 py-2">ผู้บันทึก</th>
+        <div class="overflow-x-auto">
+          <table 
+            class="w-full text-left text-xs border-collapse" 
+            style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #94a3b8;"
+          >
+            <thead>
+              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8;">
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 65px;">รหัส</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 100px;">ประเภทเอกสาร</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">เลขที่ / บริษัท</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 95px;">วันหมดอายุ</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 85px;">ค่าใช้จ่าย</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 95px;">สถานะ</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ผู้บันทึก</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 text-slate-700">
-              <tr v-for="(doc, idx) in activeDocs" :key="idx" class="hover:bg-slate-50/80">
-                <td class="px-3 py-2.5 font-bold text-blue-600 whitespace-nowrap">{{ doc.vehicle?.code || '-' }}</td>
-                <td class="px-3 py-2.5 font-bold font-mono whitespace-nowrap">{{ doc.vehicle?.plateNumber }} {{ doc.vehicle?.province }}</td>
-                <td class="px-3 py-2.5 font-semibold text-slate-900 whitespace-nowrap">{{ doc.docType }}</td>
-                <td class="px-3 py-2.5 text-xs text-slate-600">{{ doc.docNumber || '-' }}</td>
-                <td class="px-3 py-2.5 font-bold text-slate-900 whitespace-nowrap">{{ doc.expire || '-' }}</td>
-                <td class="px-3 py-2.5 text-right font-medium whitespace-nowrap">฿{{ (doc.costAmount || 0).toLocaleString() }}</td>
-                <td class="px-3 py-2.5 text-center whitespace-nowrap"><StatusBadge :days="doc.daysRemaining" /></td>
-                <td class="px-3 py-2.5 text-xs text-slate-500">{{ doc.createdBy || '-' }}</td>
+            <tbody>
+              <tr 
+                v-for="(doc, idx) in activeDocs" 
+                :key="idx" 
+                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
+              >
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb;">{{ doc.vehicle?.code || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; font-family: monospace;">{{ doc.vehicle?.plateNumber }} {{ doc.vehicle?.province }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 600; color: #0f172a;">{{ doc.docType }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #475569;">{{ doc.docNumber || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #0f172a;">{{ doc.expire || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: 600;">฿{{ (doc.costAmount || 0).toLocaleString() }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center;">
+                  <span 
+                    :style="doc.daysRemaining < 0 
+                      ? 'background: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;'
+                      : doc.daysRemaining <= 30 
+                      ? 'background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;'
+                      : doc.daysRemaining <= 60 
+                      ? 'background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;'
+                      : 'background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 2px 6px; border-radius: 9999px; font-weight: 600; font-size: 10px;'"
+                  >
+                    {{ doc.daysRemaining < 0 ? `เลยกำหนด ${Math.abs(doc.daysRemaining)} วัน` : `เหลือ ${doc.daysRemaining} วัน` }}
+                  </span>
+                </td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px;">{{ doc.createdBy || '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -198,42 +234,50 @@
       <!-- -------------------------------------------------------------
           REPORT 3: OIL CHANGE HISTORY
           ------------------------------------------------------------- -->
-      <div v-else-if="reportType === 'oil'" class="space-y-2">
+      <div v-else-if="reportType === 'oil'" class="space-y-3">
         <div class="flex items-center justify-between pb-1">
-          <h3 class="text-sm sm:text-base font-bold text-slate-900">
+          <h3 class="text-sm sm:text-base font-bold" style="color: #0f172a; font-size: 14px; font-weight: 700;">
             3. รายงานประวัติน้ำมันเครื่อง (ช่วง {{ startDate }} ถึง {{ endDate }})
           </h3>
-          <span class="text-sm font-bold text-blue-700">
+          <span style="color: #1d4ed8; font-weight: 700; font-size: 13px;">
             ยอดรวม: ฿{{ totalOilSpend.toLocaleString() }}
           </span>
         </div>
-        <div class="overflow-x-auto print:overflow-visible">
-          <table class="w-full text-left text-sm border-collapse min-w-[850px] print:min-w-0 print:w-full print:text-xs">
-            <thead class="bg-slate-100 text-xs font-semibold text-slate-700 uppercase border-b border-slate-200">
-              <tr>
-                <th class="px-3 py-2">วันที่</th>
-                <th class="px-3 py-2">รถ / รหัส</th>
-                <th class="px-3 py-2">ทะเบียน</th>
-                <th class="px-3 py-2 text-right">เลขไมล์</th>
-                <th class="px-3 py-2">รายการน้ำมัน / รายละเอียด</th>
-                <th class="px-3 py-2 text-right">ค่าใช้จ่าย (บาท)</th>
-                <th class="px-3 py-2">นัดถัดไป</th>
-                <th class="px-3 py-2">ผู้บันทึก</th>
+        <div class="overflow-x-auto">
+          <table 
+            class="w-full text-left text-xs border-collapse" 
+            style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #94a3b8;"
+          >
+            <thead>
+              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8;">
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 85px;">วันที่</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 65px;">รหัส</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 90px;">เลขไมล์</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">รายการน้ำมัน / รายละเอียด</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 85px;">ค่าใช้จ่าย</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 85px;">นัดถัดไป</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ผู้บันทึก</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 text-slate-700">
+            <tbody>
               <tr v-if="activeOil.length === 0">
-                <td colspan="8" class="text-center py-8 text-slate-400">ไม่พบประวัติน้ำมันเครื่องในช่วงวันที่นี้</td>
+                <td colspan="8" style="padding: 20px; text-align: center; color: #94a3b8;">ไม่พบประวัติน้ำมันเครื่องในช่วงวันที่นี้</td>
               </tr>
-              <tr v-else v-for="rec in activeOil" :key="rec.id" class="hover:bg-slate-50/80">
-                <td class="px-3 py-2.5 font-medium whitespace-nowrap">{{ rec.changeDate }}</td>
-                <td class="px-3 py-2.5 font-bold text-blue-600 whitespace-nowrap">{{ rec.vehicle?.code }}</td>
-                <td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap">{{ rec.vehicle?.plateNumber }} {{ rec.vehicle?.province }}</td>
-                <td class="px-3 py-2.5 text-right font-semibold whitespace-nowrap">{{ (rec.currentMileage || 0).toLocaleString() }} กม.</td>
-                <td class="px-3 py-2.5">{{ rec.oilDetails }}</td>
-                <td class="px-3 py-2.5 text-right font-bold text-slate-900 whitespace-nowrap">฿{{ (rec.cost || 0).toLocaleString() }}</td>
-                <td class="px-3 py-2.5 text-xs whitespace-nowrap">{{ rec.nextChangeDate || '-' }}</td>
-                <td class="px-3 py-2.5 text-xs text-slate-500">{{ rec.createdBy || '-' }}</td>
+              <tr 
+                v-else 
+                v-for="(rec, idx) in activeOil" 
+                :key="rec.id" 
+                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
+              >
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 500;">{{ rec.changeDate }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb;">{{ rec.vehicle?.code }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-weight: 700;">{{ rec.vehicle?.plateNumber }} {{ rec.vehicle?.province }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: 600;">{{ (rec.currentMileage || 0).toLocaleString() }} กม.</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #1e293b;">{{ rec.oilDetails }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700; color: #0f172a;">฿{{ (rec.cost || 0).toLocaleString() }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #475569;">{{ rec.nextChangeDate || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px;">{{ rec.createdBy || '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -243,44 +287,50 @@
       <!-- -------------------------------------------------------------
           REPORT 4: MAINTENANCE HISTORY
           ------------------------------------------------------------- -->
-      <div v-else-if="reportType === 'maintenance'" class="space-y-2">
+      <div v-else-if="reportType === 'maintenance'" class="space-y-3">
         <div class="flex items-center justify-between pb-1">
-          <h3 class="text-sm sm:text-base font-bold text-slate-900">
+          <h3 class="text-sm sm:text-base font-bold" style="color: #0f172a; font-size: 14px; font-weight: 700;">
             4. รายงานประวัติซ่อมบำรุง (ช่วง {{ startDate }} ถึง {{ endDate }})
           </h3>
-          <span class="text-sm font-bold text-rose-600">
+          <span style="color: #e11d48; font-weight: 700; font-size: 13px;">
             ยอดรวม: ฿{{ totalMntSpend.toLocaleString() }}
           </span>
         </div>
-        <div class="overflow-x-auto print:overflow-visible">
-          <table class="w-full text-left text-sm border-collapse min-w-[850px] print:min-w-0 print:w-full print:text-xs">
-            <thead class="bg-slate-100 text-xs font-semibold text-slate-700 uppercase border-b border-slate-200">
-              <tr>
-                <th class="px-3 py-2">วันที่</th>
-                <th class="px-3 py-2">รถ / รหัส</th>
-                <th class="px-3 py-2">ทะเบียน</th>
-                <th class="px-3 py-2 text-right">เลขไมล์</th>
-                <th class="px-3 py-2">รายละเอียดการซ่อม</th>
-                <th class="px-3 py-2">อู่ / ร้านซ่อม</th>
-                <th class="px-3 py-2 text-right">ค่าใช้จ่าย (บาท)</th>
-                <th class="px-3 py-2">ผู้บันทึก</th>
+        <div class="overflow-x-auto">
+          <table 
+            class="w-full text-left text-xs border-collapse" 
+            style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #94a3b8;"
+          >
+            <thead>
+              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8;">
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 85px;">วันที่ซ่อม</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 65px;">รหัส</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 85px;">เลขไมล์</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">รายละเอียดการซ่อม</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 120px;">อู่ / ร้านซ่อม</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 85px;">ค่าใช้จ่าย</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ผู้บันทึก</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 text-slate-700">
+            <tbody>
               <tr v-if="activeMnt.length === 0">
-                <td colspan="8" class="text-center py-8 text-slate-400">ไม่พบประวัติซ่อมบำรุงในช่วงวันที่นี้</td>
+                <td colspan="8" style="padding: 20px; text-align: center; color: #94a3b8;">ไม่พบประวัติซ่อมบำรุงในช่วงวันที่นี้</td>
               </tr>
-              <tr v-else v-for="rec in activeMnt" :key="rec.id" class="hover:bg-slate-50/80">
-                <td class="px-3 py-2.5 font-medium whitespace-nowrap">{{ rec.repairDate }}</td>
-                <td class="px-3 py-2.5 font-bold text-blue-600 whitespace-nowrap">{{ rec.vehicle?.code }}</td>
-                <td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap">{{ rec.vehicle?.plateNumber }} {{ rec.vehicle?.province }}</td>
-                <td class="px-3 py-2.5 text-right font-semibold whitespace-nowrap">{{ (rec.mileage || 0).toLocaleString() }} กม.</td>
-                <td class="px-3 py-2.5 font-semibold text-slate-900">{{ rec.description }}</td>
-                <td class="px-3 py-2.5 text-slate-600">{{ rec.garage || '-' }}</td>
-                <td class="px-3 py-2.5 text-right font-bold text-rose-600 whitespace-nowrap">
-                  ฿{{ (rec.cost || 0).toLocaleString() }}
-                </td>
-                <td class="px-3 py-2.5 text-xs text-slate-500">{{ rec.createdBy || '-' }}</td>
+              <tr 
+                v-else 
+                v-for="(rec, idx) in activeMnt" 
+                :key="rec.id" 
+                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
+              >
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 500;">{{ rec.repairDate }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb;">{{ rec.vehicle?.code }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-weight: 700;">{{ rec.vehicle?.plateNumber }} {{ rec.vehicle?.province }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; color: #334155;">{{ (rec.mileage || 0).toLocaleString() }} กม.</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 600; color: #0f172a;">{{ rec.description }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #475569;">{{ rec.garage || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700; color: #e11d48;">฿{{ (rec.cost || 0).toLocaleString() }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px;">{{ rec.createdBy || '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -288,41 +338,39 @@
       </div>
 
       <!-- -------------------------------------------------------------
-          REPORT 5: EXPENSES SUMMARY BY DATE RANGE
+          REPORT 5: EXPENSES SUMMARY
           ------------------------------------------------------------- -->
       <div v-else-if="reportType === 'expenses'" class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
-            <span class="text-xs font-medium text-slate-500 block">ค่าประกันภัย</span>
-            <span class="text-base sm:text-lg font-bold text-slate-900">฿{{ totalInsSpend.toLocaleString() }}</span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+          <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px;">
+            <div style="font-size: 11px; color: #64748b;">ค่าประกันภัย</div>
+            <div style="font-size: 16px; font-weight: 700; color: #0f172a;">฿{{ totalInsSpend.toLocaleString() }}</div>
           </div>
 
-          <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
-            <span class="text-xs font-medium text-slate-500 block">ค่า พ.ร.บ. + ภาษี</span>
-            <span class="text-base sm:text-lg font-bold text-slate-900">฿{{ (totalPrbSpend + totalTaxSpend).toLocaleString() }}</span>
+          <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px;">
+            <div style="font-size: 11px; color: #64748b;">ค่า พ.ร.บ. + ภาษี</div>
+            <div style="font-size: 16px; font-weight: 700; color: #0f172a;">฿{{ (totalPrbSpend + totalTaxSpend).toLocaleString() }}</div>
           </div>
 
-          <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
-            <span class="text-xs font-medium text-slate-500 block">ค่าน้ำมันเครื่อง</span>
-            <span class="text-base sm:text-lg font-bold text-slate-900">฿{{ totalOilSpend.toLocaleString() }}</span>
+          <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px;">
+            <div style="font-size: 11px; color: #64748b;">ค่าน้ำมันเครื่อง</div>
+            <div style="font-size: 16px; font-weight: 700; color: #0f172a;">฿{{ totalOilSpend.toLocaleString() }}</div>
           </div>
 
-          <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
-            <span class="text-xs font-medium text-slate-500 block">ค่าซ่อมบำรุง</span>
-            <span class="text-base sm:text-lg font-bold text-slate-900">฿{{ totalMntSpend.toLocaleString() }}</span>
+          <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px;">
+            <div style="font-size: 11px; color: #64748b;">ค่าซ่อมบำรุง</div>
+            <div style="font-size: 16px; font-weight: 700; color: #0f172a;">฿{{ totalMntSpend.toLocaleString() }}</div>
           </div>
         </div>
 
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; display: flex; align-items: center; justify-content: space-between;">
           <div>
-            <h3 class="text-base font-bold text-blue-900">
-              รวมค่าใช้จ่ายทั้งหมดในช่วงวันที่เลือก
-            </h3>
-            <p class="text-xs text-slate-600 mt-0.5">
+            <div style="font-weight: 700; color: #1e3a8a; font-size: 14px;">รวมค่าใช้จ่ายทั้งหมดในช่วงวันที่เลือก</div>
+            <div style="font-size: 11px; color: #475569; margin-top: 2px;">
               ระหว่าง {{ startDate }} ถึง {{ endDate }} ({{ selectedVehicleId === 'all' ? 'รถทุกคันในร้าน' : 'รถที่เลือก' }})
-            </p>
+            </div>
           </div>
-          <div class="text-2xl font-extrabold text-blue-700">
+          <div style="font-size: 22px; font-weight: 800; color: #1d4ed8;">
             ฿{{ grandTotalSpend.toLocaleString() }}
           </div>
         </div>
@@ -336,16 +384,11 @@ import { ref, computed, onMounted } from 'vue';
 import { 
   Printer, 
   FileDown, 
-  ShieldCheck, 
-  Droplet, 
-  Wrench, 
   Filter, 
-  FileText,
   FileSpreadsheet
 } from 'lucide-vue-next';
 import html2pdf from 'html2pdf.js';
 import { api } from '../api';
-import StatusBadge from '../components/StatusBadge.vue';
 import AppButton from '../components/AppButton.vue';
 
 const reportType = ref('fleet'); // fleet, docs, oil, maintenance, expenses
@@ -405,15 +448,35 @@ const handleDownloadPDF = async () => {
 
   try {
     generatingPdf.value = true;
+
+    // Clone element to apply explicit isolated styling for html2canvas
+    const clone = element.cloneNode(true);
+    clone.style.width = '794px'; // Exactly A4 width at 96 DPI
+    clone.style.maxWidth = '794px';
+    clone.style.padding = '15px';
+    clone.style.backgroundColor = '#ffffff';
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.boxSizing = 'border-box';
+    document.body.appendChild(clone);
+
     const opt = {
-      margin: [8, 8, 8, 8],
+      margin: [6, 6, 6, 6],
       filename: `โชคดีค้าข้าว_รายงาน_${reportType.value}_${new Date().toISOString().split('T')[0]}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true, 
+        letterRendering: true,
+        backgroundColor: '#ffffff',
+        windowWidth: 794
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    await html2pdf().set(opt).from(element).save();
+    await html2pdf().set(opt).from(clone).save();
+    document.body.removeChild(clone);
   } catch (err) {
     console.error('PDF Generation Error:', err);
     alert('เกิดข้อผิดพลาดในการดาวน์โหลด PDF: ' + err.message);
