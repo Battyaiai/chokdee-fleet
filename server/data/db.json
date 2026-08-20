@@ -37,8 +37,8 @@
   ],
   "line_settings": {
     "isEnabled": true,
-    "channelAccessToken": "",
-    "userIdOrGroupId": "",
+    "channelAccessToken": "apFNd4bf5srTSGtX5GwVsgyjpa6B+r4Nz0cUiBftT21FerSPdexojnPkHHzfj3e+V9aTHggxzGFdou22w5QtrvWacKaVCgqc3tSGoFHP+XNAiR13D0exoyEBrshAXdqA8QFDoJdD1uXZ5dfji/4ICgdB04t89/1O/w1cDnyilFU=",
+    "userIdOrGroupId": "cca6283485c2c272a1c4e1d25732505f",
     "notifyInsurance": true,
     "notifyPrb": true,
     "notifyTax": true,
@@ -47,7 +47,8 @@
     "notifyTime": "08:00",
     "daysInsuranceBefore": 60,
     "daysTaxBefore": 90,
-    "daysPrbBefore": 60
+    "daysPrbBefore": 60,
+    "hasToken": false
   },
   "line_logs": [
     {
