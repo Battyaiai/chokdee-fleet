@@ -52,6 +52,16 @@
   },
   "line_logs": [
     {
+      "id": "log-1787213696271-papu",
+      "timestamp": "2026-08-20T08:14:56.271Z",
+      "type": "test",
+      "vehiclePlate": "ระบบทดสอบ",
+      "details": "ทดสอบส่งข้อความแจ้งเตือนผ่าน LINE Settings",
+      "status": "failed",
+      "errorMessage": "fetch failed",
+      "stage": "test"
+    },
+    {
       "id": "log-1787213259442-5y8i",
       "timestamp": "2026-08-20T08:07:39.442Z",
       "type": "test",
