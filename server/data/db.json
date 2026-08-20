@@ -51,6 +51,16 @@
   },
   "line_logs": [
     {
+      "id": "log-1787213259442-5y8i",
+      "timestamp": "2026-08-20T08:07:39.442Z",
+      "type": "test",
+      "vehiclePlate": "ระบบทดสอบ",
+      "details": "ทดสอบส่งข้อความแจ้งเตือนผ่าน LINE Settings",
+      "status": "sent",
+      "errorMessage": "จำลองการส่ง (ยังไม่ได้ใส่ Token)",
+      "stage": "test"
+    },
+    {
       "id": "log-1787213215525-gm7y",
       "timestamp": "2026-08-20T08:06:55.525Z",
       "type": "test",
