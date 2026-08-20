@@ -5,6 +5,36 @@
   "tax_docs": [],
   "oil_changes": [],
   "maintenances": [],
+  "staff_members": [
+    {
+      "id": "staff-1",
+      "name": "พัควลัญชญ์ อุไรล้ำ",
+      "role": "พนักงานไอที",
+      "isDefault": true,
+      "createdAt": "2026-08-20T08:00:00.000Z"
+    },
+    {
+      "id": "staff-2",
+      "name": "สมศักดิ์ ข้าวดี",
+      "role": "หัวหน้าคลัง",
+      "isDefault": false,
+      "createdAt": "2026-08-20T08:00:00.000Z"
+    },
+    {
+      "id": "staff-3",
+      "name": "มานะ ขยันงาน",
+      "role": "ธุรการ",
+      "isDefault": false,
+      "createdAt": "2026-08-20T08:00:00.000Z"
+    },
+    {
+      "id": "staff-4",
+      "name": "สมคิด",
+      "role": "ช่างประจำร้าน",
+      "isDefault": false,
+      "createdAt": "2026-08-20T08:00:00.000Z"
+    }
+  ],
   "line_settings": {
     "isEnabled": true,
     "channelAccessToken": "",
@@ -19,6 +49,17 @@
     "daysTaxBefore": 90,
     "daysPrbBefore": 60
   },
-  "line_logs": [],
+  "line_logs": [
+    {
+      "id": "log-1787213215525-gm7y",
+      "timestamp": "2026-08-20T08:06:55.525Z",
+      "type": "test",
+      "vehiclePlate": "ระบบทดสอบ",
+      "details": "ทดสอบส่งข้อความแจ้งเตือนผ่าน LINE Settings",
+      "status": "sent",
+      "errorMessage": "จำลองการส่ง (ยังไม่ได้ใส่ Token)",
+      "stage": "test"
+    }
+  ],
   "adminPin": "172839"
 }
