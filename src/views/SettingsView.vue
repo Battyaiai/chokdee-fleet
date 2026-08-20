@@ -395,6 +395,74 @@
       </div>
     </div>
 
+    <!-- 5. Cloud Auto-Sync Section -->
+    <div class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+            <CloudUpload :size="20" />
+          </div>
+          <div>
+            <h4 class="text-base font-bold text-slate-900 leading-tight">
+              ระบบซิงก์ข้อมูลคลาวด์อัตโนมัติ (Cloud Auto-Sync)
+            </h4>
+            <p class="text-xs text-slate-500 mt-0.5">
+              อัปเดตและสำรองข้อมูลขึ้น GitHub และระบบคลาวด์อัตโนมัติทุกครั้งที่มีการกดบันทึกหรือแก้ไขข้อมูล
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <AppButton 
+            variant="primary" 
+            size="sm" 
+            @click="handleManualSync"
+            :loading="isSyncing"
+          >
+            <CloudUpload :size="14" />
+            <span>ซิงก์ขึ้นคลาวด์เดี๋ยวนี้ (Sync Now)</span>
+          </AppButton>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-1">
+          <div class="text-xs text-slate-500 font-medium">สถานะการทำงาน</div>
+          <div class="flex items-center gap-2">
+            <span 
+              :class="[
+                'w-2.5 h-2.5 rounded-full',
+                isSyncing ? 'bg-amber-500 animate-ping' : syncStatus === 'error' ? 'bg-rose-500' : 'bg-emerald-500'
+              ]"
+            />
+            <span class="text-xs sm:text-sm font-bold text-slate-800">
+              {{ isSyncing ? 'กำลังซิงก์ข้อมูล...' : syncStatus === 'error' ? 'การซิงก์ขัดข้อง' : '🟢 ซิงก์อัตโนมัติตลอดเวลา' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-1">
+          <div class="text-xs text-slate-500 font-medium">ซิงก์ล่าสุดเมื่อ</div>
+          <div class="text-xs sm:text-sm font-bold text-slate-800">
+            {{ lastSyncTime ? new Date(lastSyncTime).toLocaleString('th-TH') : 'พร้อมใช้งาน' }}
+          </div>
+        </div>
+
+        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-1">
+          <div class="text-xs text-slate-500 font-medium">Cloud Repository</div>
+          <div class="text-xs font-mono font-semibold text-blue-700 truncate" title="https://github.com/Battyaiai/chokdee-fleet">
+            Battyaiai/chokdee-fleet (main)
+          </div>
+        </div>
+      </div>
+
+      <div v-if="syncFeedback" :class="['text-xs p-3 rounded-lg border flex items-center gap-2', syncFeedback.success ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200']">
+        <CheckCircle2 v-if="syncFeedback.success" :size="15" class="shrink-0 text-emerald-600" />
+        <XCircle v-else :size="15" class="shrink-0 text-rose-600" />
+        <span>{{ syncFeedback.message }}</span>
+      </div>
+    </div>
+
     <!-- 6. Danger Zone / Reset -->
     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="space-y-1">
@@ -425,14 +493,25 @@ import {
   Database,
   Users,
   Info,
-  KeyRound
+  KeyRound,
+  CloudUpload
 } from 'lucide-vue-next';
 import { useAuth } from '../composables/useAuth';
+import { useCloudSync } from '../composables/useCloudSync';
 
 const { updatePin } = useAuth();
+const { syncStatus, lastSyncTime, isSyncing, triggerSync, fetchStatus } = useCloudSync();
+
 const oldPinInput = ref('');
 const newPinInput = ref('');
 const pinFeedback = ref(null);
+const syncFeedback = ref(null);
+
+const handleManualSync = async () => {
+  syncFeedback.value = null;
+  const result = await triggerSync('Manual Sync from Settings View');
+  syncFeedback.value = result;
+};
 
 const handleChangePin = () => {
   const result = updatePin(oldPinInput.value, newPinInput.value);

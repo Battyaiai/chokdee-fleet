@@ -76,5 +76,9 @@ export const api = {
 
   // Admin Auth
   adminLogin: (pin) => request('/admin/login', { method: 'POST', body: JSON.stringify({ pin }) }),
-  adminChangePin: (oldPin, newPin) => request('/admin/change-pin', { method: 'PUT', body: JSON.stringify({ oldPin, newPin }) })
+  adminChangePin: (oldPin, newPin) => request('/admin/change-pin', { method: 'PUT', body: JSON.stringify({ oldPin, newPin }) }),
+
+  // Cloud Sync
+  getCloudSyncStatus: () => request('/cloud-sync/status'),
+  triggerCloudSync: (data) => request('/cloud-sync/sync-now', { method: 'POST', body: JSON.stringify(data || {}) })
 };

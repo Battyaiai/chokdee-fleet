@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { initialSeedData } from './seedData.js';
+import { cloudSync } from './cloudSync.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +32,8 @@ function loadDB() {
 function saveDB(data) {
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    // Automatically trigger cloud auto-sync to GitHub/Cloud on every save/edit
+    cloudSync.triggerAutoSync();
   } catch (err) {
     console.error('Error saving db.json:', err);
   }

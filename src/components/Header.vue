@@ -38,6 +38,28 @@
 
     <!-- Right Controls -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <!-- Cloud Sync Status / Trigger Button -->
+      <button 
+        type="button"
+        @click="handleCloudSync"
+        :disabled="isSyncing"
+        :title="lastMessage || 'ซิงก์ข้อมูลขึ้นคลาวด์อัตโนมัติ (GitHub)'"
+        :class="[
+          'px-2.5 py-1 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition-all shadow-2xs',
+          isSyncing 
+            ? 'bg-amber-50 text-amber-700 border-amber-300 animate-pulse' 
+            : syncStatus === 'error'
+              ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+              : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+        ]"
+      >
+        <CloudUpload v-if="!isSyncing" :size="14" :class="syncStatus === 'error' ? 'text-rose-600' : 'text-emerald-600'" />
+        <RefreshCw v-else :size="14" class="animate-spin text-amber-600" />
+        <span class="hidden md:inline">
+          {{ isSyncing ? 'กำลังซิงก์คลาวด์...' : syncStatus === 'error' ? 'ซิงก์ขัดข้อง' : 'คลาวด์ซิงก์แล้ว ☁️' }}
+        </span>
+      </button>
+
       <!-- Admin Login / Logout Button -->
       <AppButton 
         v-if="!isAdmin"
@@ -96,9 +118,11 @@
 </template>
 
 <script setup>
-import { Bell, RefreshCw, Printer, Menu, Lock, LogOut, ShieldCheck, Eye } from 'lucide-vue-next';
+import { onMounted, onUnmounted } from 'vue';
+import { Bell, RefreshCw, Printer, Menu, Lock, LogOut, ShieldCheck, Eye, CloudUpload } from 'lucide-vue-next';
 import AppButton from './AppButton.vue';
 import { useAuth } from '../composables/useAuth';
+import { useCloudSync } from '../composables/useCloudSync';
 
 defineProps({
   title: {
@@ -121,4 +145,17 @@ defineProps({
 
 const emit = defineEmits(['refresh', 'quickPrint', 'openMobile']);
 const { isAdmin, isLoginModalOpen, logout } = useAuth();
+const { syncStatus, lastMessage, isSyncing, triggerSync, startPolling, stopPolling } = useCloudSync();
+
+const handleCloudSync = async () => {
+  await triggerSync('Manual Sync from Header');
+};
+
+onMounted(() => {
+  startPolling(15000);
+});
+
+onUnmounted(() => {
+  stopPolling();
+});
 </script>

@@ -590,6 +590,7 @@
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">ประเภทรถ</label>
               <select class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs" v-model="formData.type">
+                <option value="รถบรรทุก 12 ล้อ">รถบรรทุก 12 ล้อ</option>
                 <option value="รถบรรทุก 10 ล้อ">รถบรรทุก 10 ล้อ</option>
                 <option value="รถบรรทุก 6 ล้อ">รถบรรทุก 6 ล้อ</option>
                 <option value="รถกระบะตอนเดียว">รถกระบะตอนเดียว (ตู้ทึบ/คอก)</option>

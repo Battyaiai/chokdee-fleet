@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { db } from './database.js';
 import { getDaysDiff, sendLineMessage, runFleetAlertScanner, formatThaiDate } from './lineNotifier.js';
 import { initScheduler } from './scheduler.js';
+import { cloudSync } from './cloudSync.js';
 
 dotenv.config();
 
@@ -874,6 +875,25 @@ app.post('/api/reset-data', (req, res) => {
   try {
     const seed = db.resetToSeed();
     res.json({ success: true, message: 'Reset data to seed successfully', data: seed });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Cloud Sync endpoints
+app.get('/api/cloud-sync/status', (req, res) => {
+  try {
+    const status = cloudSync.getStatus();
+    res.json({ success: true, data: status });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/cloud-sync/sync-now', async (req, res) => {
+  try {
+    const status = await cloudSync.syncNow(req.body?.message || 'Manual Sync from UI');
+    res.json({ success: true, data: status });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
