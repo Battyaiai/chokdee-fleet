@@ -880,6 +880,53 @@ app.post('/api/reset-data', (req, res) => {
   }
 });
 
+// Staff Members (รายชื่อผู้บันทึกข้อมูล)
+app.get('/api/staff', (req, res) => {
+  try {
+    const staff = db.getStaffMembers();
+    res.json({ success: true, data: staff });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/staff', (req, res) => {
+  try {
+    const newStaff = db.createStaffMember(req.body || {});
+    res.json({ success: true, data: newStaff });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.put('/api/staff/:id', (req, res) => {
+  try {
+    const updated = db.updateStaffMember(req.params.id, req.body || {});
+    if (!updated) return res.status(404).json({ success: false, error: 'Staff member not found' });
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.delete('/api/staff/:id', (req, res) => {
+  try {
+    db.deleteStaffMember(req.params.id);
+    res.json({ success: true, message: 'Deleted staff member successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/staff/:id/default', (req, res) => {
+  try {
+    const members = db.setDefaultStaffMember(req.params.id);
+    res.json({ success: true, data: members });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Cloud Sync endpoints
 app.get('/api/cloud-sync/status', (req, res) => {
   try {

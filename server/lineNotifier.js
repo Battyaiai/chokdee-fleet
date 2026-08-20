@@ -42,75 +42,81 @@ export function getAlertStage(daysRemaining) {
   return 'normal';
 }
 
-// Send message via LINE (Supports both LINE Notify and LINE Messaging API)
+// Send message via LINE Messaging API
 export async function sendLineMessage(text, altText = 'แจ้งเตือนระบบรถโชคดีค้าข้าว') {
   const settings = db.getLineSettings();
-  const token = (settings.channelAccessToken || settings.notifyToken || process.env.LINE_CHANNEL_ACCESS_TOKEN || process.env.LINE_NOTIFY_TOKEN || '').trim();
+  const token = (settings.channelAccessToken || process.env.LINE_CHANNEL_ACCESS_TOKEN || '').trim();
   const targetId = (settings.userIdOrGroupId || process.env.LINE_USER_ID || '').trim();
 
   if (!token) {
     return {
       success: false,
       simulated: true,
-      message: 'ยังไม่ได้ระบุ LINE Token (ระบบจำลองการทำงานบนเครื่อง)'
+      message: 'ยังไม่ได้ระบุ Channel Access Token (ระบบจำลองการทำงานบนเครื่อง)'
     };
   }
 
-  // If targetId is provided, try LINE Messaging API Push first
-  if (targetId) {
-    try {
-      const response = await fetch('https://api.line.me/v2/bot/message/push', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          to: targetId,
-          messages: [
-            {
-              type: 'text',
-              text: text
-            }
-          ]
-        })
-      });
-
-      if (response.ok) {
-        return { success: true, message: 'ส่งข้อความ LINE สำเร็จ' };
-      }
-      const errText = await response.text();
-      console.warn('LINE Messaging API returned error, falling back to LINE Notify:', errText);
-    } catch (e) {
-      console.warn('LINE Messaging API error:', e.message);
-    }
+  if (!targetId) {
+    return {
+      success: false,
+      error: 'กรุณาระบุ User ID หรือ Group ID (เช่น U... หรือ C...) ในหน้าตั้งค่า'
+    };
   }
 
-  // Try LINE Notify API (simplest method: only Token needed, no Group ID required)
-  try {
-    const params = new URLSearchParams();
-    params.append('message', '\n' + text);
+  // Validate User ID / Group ID format
+  if (!targetId.startsWith('U') && !targetId.startsWith('C') && !targetId.startsWith('R')) {
+    return {
+      success: false,
+      error: `รูปแบบ User ID / Group ID ไม่ถูกต้อง (${targetId}) ต้องขึ้นต้นด้วยตัว U (เช่น U123...) หรือตัว C (เช่น C123...) ความยาว 33 ตัวอักษร (อย่าใส่ Channel Secret)`
+    };
+  }
 
-    const response = await fetch('https://notify-api.line.me/api/notify', {
+  try {
+    const response = await fetch('https://api.line.me/v2/bot/message/push', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: params
+      body: JSON.stringify({
+        to: targetId,
+        messages: [
+          {
+            type: 'text',
+            text: text
+          }
+        ]
+      })
     });
 
     if (response.ok) {
-      return { success: true, message: 'ส่งข้อความผ่าน LINE สำเร็จ' };
+      return { success: true, message: 'ส่งข้อความ LINE สำเร็จเรียบร้อยแล้ว' };
     }
 
-    const errText = await response.text();
-    throw new Error(`LINE API error (${response.status}): ${errText}`);
+    const errData = await response.json().catch(() => ({ message: response.statusText }));
+    let errorDetail = errData.message || response.statusText;
+    
+    if (response.status === 400) {
+      if (errorDetail.includes('property, \'to\'')) {
+        errorDetail = 'User ID หรือ Group ID ไม่ถูกต้อง หรือไม่มีอยู่ในระบบ (ตรวจสอบว่าขึ้นต้นด้วย U หรือ C และยาว 33 ตัวอักษร)';
+      }
+    } else if (response.status === 401) {
+      errorDetail = 'Channel Access Token ไม่ถูกต้องหรือหมดอายุ (กรุณากด Issue Token ใหม่จาก LINE Developers)';
+    } else if (response.status === 403) {
+      errorDetail = 'บอทถูกบล็อกหรือไม่สามารถส่งหาผู้ใช้นี้ได้ (กรุณาสแกน QR Code เพิ่มเพื่อนกับบอทก่อน)';
+    }
+
+    return { 
+      success: false, 
+      error: `LINE API (${response.status}): ${errorDetail}` 
+    };
   } catch (error) {
-    console.error('LINE Send Error:', error.message);
-    return { success: false, error: error.message };
+    console.error('LINE Send Error:', error.message, error.cause);
+    const detail = error.cause?.message || error.message;
+    return { success: false, error: `ไม่สามารถเชื่อมต่อ LINE เซิร์ฟเวอร์ได้: ${detail}` };
   }
 }
+
 
 // Check and send all pending notifications (Daily Scanner)
 export async function runFleetAlertScanner(forceAll = false) {

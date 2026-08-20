@@ -80,5 +80,12 @@ export const api = {
 
   // Cloud Sync
   getCloudSyncStatus: () => request('/cloud-sync/status'),
-  triggerCloudSync: (data) => request('/cloud-sync/sync-now', { method: 'POST', body: JSON.stringify(data || {}) })
+  triggerCloudSync: (data) => request('/cloud-sync/sync-now', { method: 'POST', body: JSON.stringify(data || {}) }),
+
+  // Staff Members (รายชื่อผู้บันทึกข้อมูล)
+  getStaffMembers: () => request('/staff'),
+  createStaffMember: (data) => request('/staff', { method: 'POST', body: JSON.stringify(data) }),
+  updateStaffMember: (id, data) => request(`/staff/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteStaffMember: (id) => request(`/staff/${id}`, { method: 'DELETE' }),
+  setDefaultStaffMember: (id) => request(`/staff/${id}/default`, { method: 'POST' })
 };

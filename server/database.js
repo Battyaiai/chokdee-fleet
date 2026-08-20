@@ -377,6 +377,75 @@ export const db = {
     });
   },
 
+  // Staff Members (ผู้บันทึกข้อมูล)
+  getStaffMembers() {
+    const data = loadDB();
+    if (!data.staff_members || data.staff_members.length === 0) {
+      data.staff_members = [
+        { id: "staff-1", name: "พัควลัญชญ์ อุไรล้ำ", role: "พนักงานไอที", isDefault: true, createdAt: new Date().toISOString() },
+        { id: "staff-2", name: "สมศักดิ์ ข้าวดี", role: "หัวหน้าคลัง", isDefault: false, createdAt: new Date().toISOString() },
+        { id: "staff-3", name: "มานะ ขยันงาน", role: "ธุรการ", isDefault: false, createdAt: new Date().toISOString() },
+        { id: "staff-4", name: "สมคิด", role: "ช่างประจำร้าน", isDefault: false, createdAt: new Date().toISOString() }
+      ];
+      saveDB(data);
+    }
+    return data.staff_members;
+  },
+  createStaffMember(staff) {
+    const data = loadDB();
+    const members = data.staff_members || [];
+    if (staff.isDefault) {
+      members.forEach(m => { m.isDefault = false; });
+    }
+    const newStaff = {
+      id: staff.id || `staff-${Date.now()}`,
+      name: (staff.name || '').trim(),
+      role: (staff.role || '').trim(),
+      isDefault: Boolean(staff.isDefault) || members.length === 0,
+      createdAt: new Date().toISOString()
+    };
+    data.staff_members = [...members, newStaff];
+    saveDB(data);
+    return newStaff;
+  },
+  updateStaffMember(id, updates) {
+    const data = loadDB();
+    const members = data.staff_members || [];
+    const index = members.findIndex(m => m.id === id);
+    if (index === -1) return null;
+    if (updates.isDefault) {
+      members.forEach(m => { m.isDefault = false; });
+    }
+    data.staff_members[index] = {
+      ...members[index],
+      ...updates,
+      name: updates.name !== undefined ? updates.name.trim() : members[index].name,
+      role: updates.role !== undefined ? updates.role.trim() : members[index].role,
+      updatedAt: new Date().toISOString()
+    };
+    saveDB(data);
+    return data.staff_members[index];
+  },
+  deleteStaffMember(id) {
+    const data = loadDB();
+    data.staff_members = (data.staff_members || []).filter(m => m.id !== id);
+    if (data.staff_members.length > 0 && !data.staff_members.some(m => m.isDefault)) {
+      data.staff_members[0].isDefault = true;
+    }
+    saveDB(data);
+    return true;
+  },
+  setDefaultStaffMember(id) {
+    const data = loadDB();
+    const members = data.staff_members || [];
+    members.forEach(m => {
+      m.isDefault = (m.id === id);
+    });
+    data.staff_members = members;
+    saveDB(data);
+    return members;
+  },
+
   // Reset to seed data
   resetToSeed() {
     saveDB(initialSeedData);

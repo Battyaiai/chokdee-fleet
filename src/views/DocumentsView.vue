@@ -465,11 +465,34 @@
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อผู้บันทึกข้อมูล <span class="text-rose-500">*</span></label>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-semibold text-slate-700">ผู้บันทึกข้อมูล <span class="text-rose-500">*</span></label>
+                <button 
+                  type="button" 
+                  class="text-[11px] text-blue-600 hover:text-blue-800 underline font-medium"
+                  @click="customCreatedByMode = !customCreatedByMode"
+                >
+                  {{ customCreatedByMode ? '← เลือกจากรายชื่อ' : '+ พิมพ์ระบุเอง' }}
+                </button>
+              </div>
+
+              <select
+                v-if="!customCreatedByMode"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                v-model="formData.createdBy"
+                required
+              >
+                <option v-for="staff in getStaffFormattedList" :key="staff.id" :value="staff.label">
+                  {{ staff.label }}{{ staff.isDefault ? ' (ค่าเริ่มต้น)' : '' }}
+                </option>
+              </select>
+
               <input
+                v-else
                 type="text"
                 class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.createdBy"
+                placeholder="ระบุชื่อและตำแหน่งผู้บันทึก..."
                 required
               />
             </div>
@@ -499,15 +522,24 @@ import {
   Plus, 
   Search, 
   Edit2, 
-  Trash2
+  Trash2,
+  Calendar, 
+  DollarSign, 
+  Building2, 
+  CheckCircle,
+  FileSpreadsheet
 } from 'lucide-vue-next';
 import { api } from '../api';
 import StatusBadge from '../components/StatusBadge.vue';
 import Modal from '../components/Modal.vue';
 import AppButton from '../components/AppButton.vue';
 import { useAuth } from '../composables/useAuth';
+import { useStaff } from '../composables/useStaff';
 
 const { isAdmin } = useAuth();
+const { getStaffFormattedList, defaultStaffLabel, loadStaff } = useStaff();
+
+const customCreatedByMode = ref(false);
 const activeDocTab = ref('insurance'); // insurance, prb, tax
 const vehicles = ref([]);
 const insuranceList = ref([]);
@@ -537,7 +569,7 @@ const formData = ref({
   startDate: '',
   endDate: '',
   notes: '',
-  createdBy: 'มานะ ขยันงาน (ธุรการ)'
+  createdBy: defaultStaffLabel.value
 });
 
 const loadData = async () => {
@@ -562,6 +594,7 @@ const loadData = async () => {
 
 onMounted(() => {
   loadData();
+  loadStaff();
 });
 
 const handleVehicleChange = () => {
@@ -580,6 +613,7 @@ const handleOpenAdd = () => {
   const nextYearStr = nextYear.toISOString().split('T')[0];
 
   editingId.value = null;
+  customCreatedByMode.value = false;
   formData.value = {
     vehicleId: defaultVeh,
     company: 'วิริยะประกันภัย',
@@ -594,13 +628,15 @@ const handleOpenAdd = () => {
     startDate: todayStr,
     endDate: nextYearStr,
     notes: '',
-    createdBy: 'มานะ ขยันงาน (ธุรการ)'
+    createdBy: defaultStaffLabel.value
   };
   isModalOpen.value = true;
 };
 
 const handleOpenEdit = (item) => {
   editingId.value = item.id;
+  const isCustom = !getStaffFormattedList.value.some(s => s.label === item.createdBy);
+  customCreatedByMode.value = isCustom;
   formData.value = {
     vehicleId: item.vehicleId || '',
     company: item.company || '',
@@ -615,7 +651,7 @@ const handleOpenEdit = (item) => {
     startDate: item.startDate || '',
     endDate: item.endDate || '',
     notes: item.notes || '',
-    createdBy: item.createdBy || 'มานะ ขยันงาน (ธุรการ)'
+    createdBy: item.createdBy || defaultStaffLabel.value
   };
   isModalOpen.value = true;
 };

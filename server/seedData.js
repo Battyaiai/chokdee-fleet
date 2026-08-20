@@ -5,6 +5,36 @@ export const initialSeedData = {
   tax_docs: [],
   oil_changes: [],
   maintenances: [],
+  staff_members: [
+    {
+      id: "staff-1",
+      name: "พัควลัญชญ์ อุไรล้ำ",
+      role: "พนักงานไอที",
+      isDefault: true,
+      createdAt: "2026-08-20T08:00:00.000Z"
+    },
+    {
+      id: "staff-2",
+      name: "สมศักดิ์ ข้าวดี",
+      role: "หัวหน้าคลัง",
+      isDefault: false,
+      createdAt: "2026-08-20T08:00:00.000Z"
+    },
+    {
+      id: "staff-3",
+      name: "มานะ ขยันงาน",
+      role: "ธุรการ",
+      isDefault: false,
+      createdAt: "2026-08-20T08:00:00.000Z"
+    },
+    {
+      id: "staff-4",
+      name: "สมคิด",
+      role: "ช่างประจำร้าน",
+      isDefault: false,
+      createdAt: "2026-08-20T08:00:00.000Z"
+    }
+  ],
   line_settings: {
     isEnabled: true,
     channelAccessToken: "",
