@@ -287,7 +287,7 @@ const formData = ref({
   garage: '',
   cost: '',
   notes: '',
-  createdBy: 'สมศักดิ์ ข้าวดี (หัวหน้าคลัง)'
+  createdBy: 'พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)'
 });
 
 const loadData = async () => {
@@ -321,7 +321,7 @@ const handleOpenAdd = () => {
     garage: '',
     cost: '',
     notes: '',
-    createdBy: 'สมศักดิ์ ข้าวดี (หัวหน้าคลัง)'
+    createdBy: 'พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)'
   };
   isModalOpen.value = true;
 };
@@ -336,7 +336,7 @@ const handleOpenEdit = (rec) => {
     garage: rec.garage || '',
     cost: rec.cost || '',
     notes: rec.notes || '',
-    createdBy: rec.createdBy || 'สมศักดิ์ ข้าวดี'
+    createdBy: rec.createdBy || 'พัควลัญชญ์ อุไรล้ำ '
   };
   isModalOpen.value = true;
 };

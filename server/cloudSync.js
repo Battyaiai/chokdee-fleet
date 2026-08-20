@@ -11,7 +11,7 @@ const DB_FILE = path.join(__dirname, 'data', 'db.json');
 let syncState = {
   status: 'idle', // 'idle' | 'syncing' | 'success' | 'error'
   lastSyncTime: new Date().toISOString(),
-  lastMessage: 'ระบบพร้อมซิงก์ข้อมูลขึ้นคลาวด์อัตโนมัติ',
+  lastMessage: 'ระบบซิงก์คลาวด์อัตโนมัติพร้อมทำงาน',
   lastError: null,
   syncCount: 0,
   repository: 'https://github.com/Battyaiai/chokdee-fleet.git'
@@ -27,7 +27,7 @@ export const cloudSync = {
   },
 
   // Called automatically whenever saveDB() runs
-  triggerAutoSync(delayMs = 1500) {
+  triggerAutoSync(delayMs = 1200) {
     if (syncTimeout) {
       clearTimeout(syncTimeout);
     }
@@ -79,11 +79,18 @@ export const cloudSync = {
           console.error(`[CloudSync] GitHub API Error:`, apiErr);
         }
       } else {
-        // If git said nothing to commit, treat as success/synced
-        if (gitErr.message && gitErr.message.includes('nothing to commit')) {
+        const msg = (gitErr.message || '').toLowerCase();
+        // If git said nothing to commit or up to date, treat as success/synced
+        if (
+          msg.includes('nothing to commit') || 
+          msg.includes('no changes added to commit') ||
+          msg.includes('everything up-to-date') ||
+          msg.includes('already up to date') ||
+          msg.includes('working tree clean')
+        ) {
           syncState.status = 'success';
           syncState.lastSyncTime = new Date().toISOString();
-          syncState.lastMessage = `ข้อมูลเป็นปัจจุบันแล้ว (ไม่มีการเปลี่ยนแปลง)`;
+          syncState.lastMessage = `ข้อมูลบนคลาวด์เป็นปัจจุบันแล้ว (${timestamp})`;
           syncState.lastError = null;
         } else {
           syncState.status = 'error';
@@ -105,17 +112,46 @@ export const cloudSync = {
 
 function executeGitSync(message) {
   return new Promise((resolve, reject) => {
-    // Stage db.json, commit and push to origin main
-    const cmd = `git add server/data/db.json && git commit -m "${message.replace(/"/g, '\\"')}" && git push origin main`;
-    exec(cmd, { cwd: ROOT_DIR }, (error, stdout, stderr) => {
-      const combined = (stdout || '') + ' ' + (stderr || '');
-      if (combined.includes('nothing to commit') || combined.includes('working tree clean')) {
-        return resolve({ stdout: 'Already up to date', stderr });
+    // 1. Check if db.json has changes
+    exec('git status --porcelain server/data/db.json', { cwd: ROOT_DIR }, (statusErr, statusOut) => {
+      const hasDbChanges = Boolean(statusOut && statusOut.trim().length > 0);
+
+      if (hasDbChanges) {
+        const safeMsg = message.replace(/"/g, "'").replace(/[\r\n]+/g, ' ');
+        const cmd = `git add server/data/db.json && git commit -m "${safeMsg}" && git push origin main`;
+        exec(cmd, { cwd: ROOT_DIR }, (commitErr, stdout, stderr) => {
+          const combined = `${stdout || ''} ${stderr || ''}`;
+          if (commitErr) {
+            if (
+              combined.includes('nothing to commit') ||
+              combined.includes('no changes added to commit') ||
+              combined.includes('working tree clean') ||
+              combined.includes('Everything up-to-date') ||
+              combined.includes('Already up to date')
+            ) {
+              return resolve({ stdout: 'Synced / Up to date', stderr });
+            }
+            return reject(new Error(stderr || stdout || commitErr.message));
+          }
+          resolve({ stdout, stderr });
+        });
+      } else {
+        // No uncommitted changes in db.json, just ensure pushed to origin main
+        exec('git push origin main', { cwd: ROOT_DIR }, (pushErr, stdout, stderr) => {
+          const combined = `${stdout || ''} ${stderr || ''}`;
+          if (pushErr) {
+            if (
+              combined.includes('Everything up-to-date') ||
+              combined.includes('Already up to date') ||
+              combined.includes('up to date')
+            ) {
+              return resolve({ stdout: 'Everything up-to-date', stderr });
+            }
+            return reject(new Error(stderr || stdout || pushErr.message));
+          }
+          resolve({ stdout: 'Everything up-to-date', stderr });
+        });
       }
-      if (error) {
-        return reject(new Error(stderr || stdout || error.message));
-      }
-      resolve({ stdout, stderr });
     });
   });
 }

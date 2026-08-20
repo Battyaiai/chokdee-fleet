@@ -1047,7 +1047,7 @@ const handleOpenAdd = () => {
     engineNo: '',
     status: 'active',
     notes: '',
-    createdBy: 'สมศักดิ์ ข้าวดี (หัวหน้าคลัง)'
+    createdBy: 'พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)'
   };
   isModalOpen.value = true;
 };
