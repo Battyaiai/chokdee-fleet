@@ -132,14 +132,6 @@
             <p class="font-bold text-slate-800 text-base mt-0.5">{{ detailVehicle.plateNumber }} ({{ detailVehicle.province }})</p>
           </div>
           <div>
-            <span class="text-xs font-medium text-slate-400 block">เลขตัวถัง (VIN):</span>
-            <p class="font-mono font-semibold text-slate-800 text-sm mt-0.5">{{ detailVehicle.vin || '-' }}</p>
-          </div>
-          <div>
-            <span class="text-xs font-medium text-slate-400 block">เลขเครื่องยนต์:</span>
-            <p class="font-mono font-semibold text-slate-800 text-sm mt-0.5">{{ detailVehicle.engineNo || '-' }}</p>
-          </div>
-          <div>
             <span class="text-xs font-medium text-slate-400 block">ผู้บันทึกข้อมูล:</span>
             <p class="font-semibold text-slate-800 mt-0.5">{{ detailVehicle.createdBy || '-' }}</p>
           </div>
@@ -680,24 +672,6 @@
                 <option value="active">ใช้งานอยู่</option>
                 <option value="inactive">ไม่ได้ใช้งาน / ซ่อมพัก</option>
               </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">เลขตัวถัง (VIN)</label>
-              <input
-                type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs font-mono"
-                v-model="formData.vin"
-                placeholder="เลขตัวถัง 17 หลัก"
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">เลขเครื่องยนต์</label>
-              <input
-                type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs font-mono"
-                v-model="formData.engineNo"
-                placeholder="เลขเครื่องยนต์"
-              />
             </div>
           </div>
         </div>

@@ -136,10 +136,9 @@
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน / จังหวัด</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">ยี่ห้อ - รุ่น</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">ประเภทรถ</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 50px;">ปี</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 140px;">เลขตัวถัง (VIN)</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 85px;">สถานะ</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 120px;">ผู้บันทึก</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 60px;">ปี</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 90px;">สถานะ</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 130px;">ผู้บันทึก</th>
               </tr>
             </thead>
             <tbody>
@@ -156,7 +155,6 @@
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 600; color: #1e293b;">{{ v.brand }} {{ v.model }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #334155;">{{ v.type }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; color: #475569;">{{ v.year || '-' }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 10.5px; color: #475569;">{{ v.vin || '-' }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle;">
                   <span 
                     :style="v.status === 'active' 
@@ -529,9 +527,9 @@ const handleExportCSV = () => {
   let filename = `รายงาน_${reportType.value}.csv`;
 
   if (reportType.value === 'fleet') {
-    csvContent += 'รหัสรถ,ทะเบียน,จังหวัด,ยี่ห้อ,รุ่น,ประเภท,ปี,เลขตัวถัง,สถานะ,ผู้บันทึก\n';
+    csvContent += 'รหัสรถ,ทะเบียน,จังหวัด,ยี่ห้อ,รุ่น,ประเภท,ปี,สถานะ,ผู้บันทึก\n';
     activeVehicles.value.forEach(v => {
-      csvContent += `"${v.code}","${v.plateNumber}","${v.province}","${v.brand}","${v.model}","${v.type}","${v.year || ''}","${v.vin || ''}","${v.status}","${v.createdBy || ''}"\n`;
+      csvContent += `"${v.code}","${v.plateNumber}","${v.province}","${v.brand}","${v.model}","${v.type}","${v.year || ''}","${v.status}","${v.createdBy || ''}"\n`;
     });
   } else if (reportType.value === 'docs') {
     csvContent += 'รหัสรถ,ทะเบียน,ประเภทเอกสาร,เลขที่/บริษัท,วันหมดอายุ,ค่าใช้จ่าย,ผู้บันทึก\n';

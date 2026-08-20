@@ -24,7 +24,7 @@
             วิธีตั้งค่า LINE Notify / LINE Bot เข้ากลุ่มร้านโชคดีค้าข้าว
           </h3>
           <p class="text-xs text-blue-800/80 mt-0.5">
-            ทำตาม 3 ขั้นตอนง่ายๆ เพื่อให้ระบบส่งแจ้งเตือนเตือนภาษี พ.ร.บ. ประกันภัย และเปลี่ยนน้ำมันเครื่องอัตโนมัติ
+            ทำตาม 3 ขั้นตอนง่ายๆ เพื่อให้ระบบส่งแจ้งเตือนต่อทะเบียนรถ พ.ร.บ. ประกันภัย และเปลี่ยนน้ำมันเครื่องอัตโนมัติ
           </p>
         </div>
       </div>
@@ -172,7 +172,7 @@
                   class="rounded text-blue-600 focus:ring-blue-500 border-slate-300"
                   v-model="settings.notifyTax"
                 />
-                <span>เตือน ภาษีประจำปี</span>
+                <span>เตือน ต่อทะเบียนรถ</span>
               </label>
 
               <label class="flex items-center gap-2 cursor-pointer">
@@ -207,7 +207,7 @@
 
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">
-                เตือนภาษีล่วงหน้า (วัน)
+                เตือนต่อทะเบียนรถล่วงหน้า (วัน)
               </label>
               <input
                 type="number"

@@ -47,7 +47,7 @@
         type="button"
       >
         <FileCheck :size="18" />
-        <span>ภาษี / ต่อทะเบียน ({{ taxList.length }})</span>
+        <span>ต่อทะเบียนรถ ({{ taxList.length }})</span>
         <span class="px-2 py-0.5 text-xs font-semibold rounded bg-amber-100 text-amber-800">
           เตือน 3 เดือน
         </span>
@@ -222,7 +222,7 @@
             <tr>
               <th class="px-5 py-3">รถ / รหัส</th>
               <th class="px-5 py-3">ทะเบียน / จังหวัด</th>
-              <th class="px-5 py-3">วันที่ต่อภาษีล่าสุด</th>
+              <th class="px-5 py-3">วันที่ต่อทะเบียนล่าสุด</th>
               <th class="px-5 py-3">วันครบกำหนดต่อทะเบียน</th>
               <th class="px-5 py-3 text-right">ค่าต่อทะเบียน (บาท)</th>
               <th class="px-5 py-3 text-center">สถานะครบกำหนด</th>
@@ -399,7 +399,7 @@
         <!-- Specific Fields for Tax -->
         <div v-else-if="activeDocTab === 'tax'" class="space-y-3">
           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
-            2. รายละเอียดภาษี / ต่อทะเบียน
+            2. รายละเอียดต่อทะเบียนรถ
           </h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
@@ -421,7 +421,7 @@
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">วันที่ต่อภาษีล่าสุด</label>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">วันที่ต่อทะเบียนล่าสุด</label>
               <input
                 type="date"
                 class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
@@ -438,7 +438,7 @@
               />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ค่าธรรมเนียมต่อทะเบียน/ภาษี (บาท)</label>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">ค่าธรรมเนียมต่อทะเบียน (บาท)</label>
               <input
                 type="number"
                 class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
