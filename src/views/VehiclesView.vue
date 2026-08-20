@@ -463,8 +463,32 @@
             </thead>
             <tbody class="divide-y divide-slate-100 text-slate-700">
               <tr v-if="filteredVehicles.length === 0">
-                <td colspan="9" class="text-center py-10 text-slate-400">
-                  ไม่พบข้อมูลรถตามเงื่อนไขที่ค้นหา
+                <td colspan="9" class="text-center py-12 text-slate-400">
+                  <div v-if="vehicles.length === 0" class="flex flex-col items-center justify-center space-y-3 py-4">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-xs">
+                      <Truck :size="28" />
+                    </div>
+                    <div class="text-base font-semibold text-slate-700">ยังไม่มีข้อมูลรถในระบบ</div>
+                    <p class="text-xs text-slate-500 max-w-sm text-center">
+                      เริ่มต้นเพิ่มข้อมูลรถคันแรกของร้านโชคดีค้าข้าว หรือนำเข้าข้อมูลหลายคันพร้อมกันได้ทันที
+                    </p>
+                    <div v-if="isAdmin" class="flex items-center gap-2.5 pt-2">
+                      <AppButton variant="primary" size="sm" @click="handleOpenAdd">
+                        <Plus :size="15" />
+                        <span>เพิ่มรถคันแรก</span>
+                      </AppButton>
+                      <AppButton variant="secondary" size="sm" @click="handleOpenBulk">
+                        <FileSpreadsheet :size="15" />
+                        <span>นำเข้าจาก Excel / หลายคัน</span>
+                      </AppButton>
+                    </div>
+                    <div v-else class="text-xs text-slate-400">
+                      กรุณาเข้าสู่ระบบผู้ดูแลระบบ (Admin) เพื่อเพิ่มข้อมูลรถ
+                    </div>
+                  </div>
+                  <div v-else class="py-6">
+                    ไม่พบข้อมูลรถตามเงื่อนไขที่ค้นหา
+                  </div>
                 </td>
               </tr>
               <tr 
@@ -825,7 +849,8 @@ import {
   DollarSign, 
   Info, 
   FileCheck,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Truck
 } from 'lucide-vue-next';
 import { api } from '../api';
 import StatusBadge from '../components/StatusBadge.vue';
