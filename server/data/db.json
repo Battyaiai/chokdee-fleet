@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787817955744",
+      "code": "CK-14",
+      "name": "VOVOL",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "VOVOL",
+      "model": "XC60",
+      "color": "ขาว",
+      "plateNumber": "กจ 789",
+      "province": "กระบี่",
+      "year": "2020",
+      "vin": "PNVUZBAADM5723898",
+      "engineNo": "VOVOL",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T08:05:55.744Z"
+    },
+    {
       "id": "veh-1787817743208",
       "code": "CK-13",
       "name": "กระบะมิตซู",
