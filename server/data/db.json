@@ -4,7 +4,7 @@
       "id": "veh-1787818129474",
       "code": "CK-15",
       "name": "BYD",
-      "type": "รถกระบะตอนเดียว",
+      "type": "รถยนต์ไฟฟ้า (EV)",
       "brand": "BYD",
       "model": "BYD DOLPHIN (435KM-STD)",
       "color": "ขาว",
@@ -258,6 +258,24 @@
       "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
       "createdAt": "2026-08-27T07:17:57.547Z",
       "updatedAt": "2026-08-27T07:20:11.680Z"
+    },
+    {
+      "id": "veh-1787823347536",
+      "code": "CK-16",
+      "name": "โฟล์คลิฟท์ เบอร์ 1",
+      "type": "รถโฟล์คลิฟท์",
+      "brand": "HANGCHA",
+      "model": "X Series",
+      "color": "แดง ดำ",
+      "plateNumber": "-",
+      "province": "ประเทศจีน",
+      "year": "2025",
+      "vin": "-",
+      "engineNo": "-",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T09:35:47.536Z"
     }
   ],
   "insurance_docs": [],
