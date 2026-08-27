@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787815986202",
+      "code": "CK-05",
+      "name": "หนูแดง",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "HINO",
+      "model": "FC9JLMA-QNT",
+      "color": "ขาว แดง",
+      "plateNumber": "82-8867",
+      "province": "สุราษฎร์ธานี",
+      "year": "2562",
+      "vin": "MNKFC9JLMXHX10562",
+      "engineNo": "J05EUTH11346",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:33:06.202Z"
+    },
+    {
       "id": "veh-1787815783282",
       "code": "CK-04",
       "name": "น้ำผึ้ง",
