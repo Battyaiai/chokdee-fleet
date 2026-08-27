@@ -9,14 +9,15 @@
       "model": "GY2RS1A-XHT",
       "color": "เขียว ขาว",
       "plateNumber": "70-5251",
-      "province": "สุรา",
-      "year": "2026",
-      "vin": "",
-      "engineNo": "",
+      "province": "สุราษฎร์ธานี",
+      "year": "2559",
+      "vin": "MNKGY2PS1XHX10025",
+      "engineNo": "P11CVUH50245",
       "status": "active",
       "notes": "",
       "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
-      "createdAt": "2026-08-27T07:17:57.547Z"
+      "createdAt": "2026-08-27T07:17:57.547Z",
+      "updatedAt": "2026-08-27T07:20:11.680Z"
     }
   ],
   "insurance_docs": [],
