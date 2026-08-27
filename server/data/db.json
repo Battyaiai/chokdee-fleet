@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787816346211",
+      "code": "CK-07",
+      "name": "ตู้เหลือง",
+      "type": "รถบรรทุก 6 ล้อ",
+      "brand": "HINO",
+      "model": "FG8JJLA",
+      "color": "ม่วง เขียว แดง ส้ม",
+      "plateNumber": "83-3925",
+      "province": "สุราษฎร์ธานี",
+      "year": "2566",
+      "vin": "FG8JJLA-12148",
+      "engineNo": "JO8EUEH10202",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:39:06.211Z"
+    },
+    {
       "id": "veh-1787816112992",
       "code": "CK-06",
       "name": "ตะวัน",
