@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787816523600",
+      "code": "CK-09",
+      "name": "หวานเย็น",
+      "type": "รถบรรทุก 6 ล้อ",
+      "brand": "HINO",
+      "model": "FC9JLLA",
+      "color": "ขาว ชมพู",
+      "plateNumber": "82-6794",
+      "province": "สุราษฎร์ธานี",
+      "year": "2560",
+      "vin": "MNKFC9JLLXHX21401",
+      "engineNo": "JO5ETCH54602",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:42:03.600Z"
+    },
+    {
       "id": "veh-1787816346211",
       "code": "CK-07",
       "name": "ตู้เหลือง",
