@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787817553656",
+      "code": "CK-12",
+      "name": "มิตซู",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "MITSUBISHI",
+      "model": "TRITON",
+      "color": "ขาว",
+      "plateNumber": "บบ 9698",
+      "province": "กระบี่",
+      "year": "2559",
+      "vin": "MMTENKL30FH031046",
+      "engineNo": "MITSUBISHI",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:59:13.656Z"
+    },
+    {
       "id": "veh-1787816893602",
       "code": "CK-11",
       "name": "กระบะโตโย",
