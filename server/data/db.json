@@ -349,6 +349,24 @@
       "notes": "",
       "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
       "createdAt": "2026-08-27T09:44:10.448Z"
+    },
+    {
+      "id": "veh-1787823981464",
+      "code": "CK-21",
+      "name": "โฟล์คลิฟท์ เบอร์ 6 ",
+      "type": "รถโฟล์คลิฟท์",
+      "brand": "TCMC",
+      "model": "CLG 30",
+      "color": "เหลือง เทา",
+      "plateNumber": "-",
+      "province": "ประเทศจีน",
+      "year": "2005",
+      "vin": "-",
+      "engineNo": "-",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T09:46:21.464Z"
     }
   ],
   "insurance_docs": [],
