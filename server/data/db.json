@@ -1,5 +1,24 @@
 {
-  "vehicles": [],
+  "vehicles": [
+    {
+      "id": "veh-1787815077547",
+      "code": "CK-01",
+      "name": "อาตี๋",
+      "type": "รถบรรทุก 12 ล้อ",
+      "brand": "HINO",
+      "model": "GY2RS1A-XHT",
+      "color": "เขียว ขาว",
+      "plateNumber": "70-5251",
+      "province": "สุรา",
+      "year": "2026",
+      "vin": "",
+      "engineNo": "",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:17:57.547Z"
+    }
+  ],
   "insurance_docs": [],
   "prb_docs": [],
   "tax_docs": [],
