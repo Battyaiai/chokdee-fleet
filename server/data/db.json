@@ -331,6 +331,24 @@
       "notes": "",
       "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
       "createdAt": "2026-08-27T09:42:45.495Z"
+    },
+    {
+      "id": "veh-1787823850448",
+      "code": "CK-20",
+      "name": "โฟล์คลิฟท์ เบอร์ 5",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "MISUBISHI",
+      "model": "FD30NT",
+      "color": "-",
+      "plateNumber": "-",
+      "province": "ประเทศไทย",
+      "year": "2554",
+      "vin": "-",
+      "engineNo": "-",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T09:44:10.448Z"
     }
   ],
   "insurance_docs": [],
