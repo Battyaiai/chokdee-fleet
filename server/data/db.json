@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787815458616",
+      "code": "CK-02",
+      "name": "กล้วยหอม",
+      "type": "รถบรรทุก 12 ล้อ",
+      "brand": "ISUZU",
+      "model": "FYH77SX0FV",
+      "color": "เหลือง ดำ เทา",
+      "plateNumber": "70-7845",
+      "province": "สุราษฎร์ธานี",
+      "year": "2564",
+      "vin": "MP1FK77SJI000356",
+      "engineNo": "6UZ1WB7519",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:24:18.616Z"
+    },
+    {
       "id": "veh-1787815077547",
       "code": "CK-01",
       "name": "อาตี๋",
