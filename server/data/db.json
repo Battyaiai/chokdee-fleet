@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787816893602",
+      "code": "CK-11",
+      "name": "กระบะโตโย",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "TOYOTA",
+      "model": "Hilux Revo",
+      "color": "ขาว",
+      "plateNumber": "บม 5789",
+      "province": "กระบี่",
+      "year": "2563",
+      "vin": "MR0FA8CB900317229",
+      "engineNo": "1GD0700710",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:48:13.602Z"
+    },
+    {
       "id": "veh-1787816698072",
       "code": "CK-010",
       "name": "จัมโบ้",
