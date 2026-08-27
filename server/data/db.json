@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787815783282",
+      "code": "CK-04",
+      "name": "น้ำผึ้ง",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "ISUZU",
+      "model": "FRR90LSXXS",
+      "color": "ขาว",
+      "plateNumber": "82-4172",
+      "province": "สงขลา",
+      "year": "2558",
+      "vin": "mp1frr90lft000705",
+      "engineNo": "4hk1mp7168",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:29:43.282Z"
+    },
+    {
       "id": "veh-1787815650681",
       "code": "CK-03",
       "name": "270",
