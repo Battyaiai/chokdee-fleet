@@ -371,6 +371,24 @@
       "notes": "",
       "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
       "createdAt": "2026-08-27T09:46:21.464Z"
+    },
+    {
+      "id": "veh-1787824240208",
+      "code": "CK-22",
+      "name": "ส้มจี๊ด",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "SUZUKI",
+      "model": "AP416PUM14058",
+      "color": "เหลือง",
+      "plateNumber": "บฅ 5739",
+      "province": "กระบี่",
+      "year": "2551",
+      "vin": "MHYGCN71Y00304746",
+      "engineNo": "G16AID 147779",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T09:50:40.208Z"
     }
   ],
   "insurance_docs": [],
