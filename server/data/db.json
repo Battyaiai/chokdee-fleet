@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787818129474",
+      "code": "CK-15",
+      "name": "BYD",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "BYD",
+      "model": "BYD DOLPHIN (435KM-STD)",
+      "color": "ขาว",
+      "plateNumber": "กค 3939",
+      "province": "กระบี่",
+      "year": "2025",
+      "vin": "LCOCE4CCXSGO12958",
+      "engineNo": "BYD",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T08:08:49.474Z"
+    },
+    {
       "id": "veh-1787817955744",
       "code": "CK-14",
       "name": "VOVOL",
