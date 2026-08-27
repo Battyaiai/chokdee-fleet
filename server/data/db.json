@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787815650681",
+      "code": "CK-03",
+      "name": "270",
+      "type": "รถบรรทุก 10 ล้อ",
+      "brand": "ISUZU",
+      "model": "FXZ23NZPT",
+      "color": "ขาว",
+      "plateNumber": "70-4311",
+      "province": "ราชบุรี",
+      "year": "2556",
+      "vin": "FXZ23NZPT-3602675",
+      "engineNo": "6SD1-726100",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:27:30.681Z"
+    },
+    {
       "id": "veh-1787815458616",
       "code": "CK-02",
       "name": "กล้วยหอม",
