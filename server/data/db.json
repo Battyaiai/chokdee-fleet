@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787816112992",
+      "code": "CK-06",
+      "name": "ตะวัน",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "HINO",
+      "model": "FC9JJA",
+      "color": "ขาว",
+      "plateNumber": "80-6354",
+      "province": "พังงา",
+      "year": "2559",
+      "vin": "MNKFC9JJLXHX20747",
+      "engineNo": "J05ETCH53028",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T07:35:12.992Z"
+    },
+    {
       "id": "veh-1787815986202",
       "code": "CK-05",
       "name": "หนูแดง",
