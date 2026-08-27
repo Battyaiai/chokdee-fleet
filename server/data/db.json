@@ -295,6 +295,24 @@
       "notes": "",
       "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
       "createdAt": "2026-08-27T09:38:56.698Z"
+    },
+    {
+      "id": "veh-1787823638640",
+      "code": "CK-18",
+      "name": "โฟล์คลิฟท์ เบอร์ 3",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "TOYOTA",
+      "model": "8-Series",
+      "color": "ส้ม ดำ",
+      "plateNumber": "-",
+      "province": "-",
+      "year": "2018",
+      "vin": "-",
+      "engineNo": "-",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T09:40:38.640Z"
     }
   ],
   "insurance_docs": [],
