@@ -313,6 +313,24 @@
       "notes": "",
       "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
       "createdAt": "2026-08-27T09:40:38.640Z"
+    },
+    {
+      "id": "veh-1787823765495",
+      "code": "CK-19",
+      "name": "โฟล์คลิฟท์ เบอร์ 4",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "TOYOTA",
+      "model": "8-Series",
+      "color": "ส้ม เทา ดำ",
+      "plateNumber": "-",
+      "province": "ประเทศไทย",
+      "year": "2006",
+      "vin": "-",
+      "engineNo": "-",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T09:42:45.495Z"
     }
   ],
   "insurance_docs": [],
