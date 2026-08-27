@@ -1,6 +1,24 @@
 {
   "vehicles": [
     {
+      "id": "veh-1787817743208",
+      "code": "CK-13",
+      "name": "กระบะมิตซู",
+      "type": "รถกระบะตอนเดียว",
+      "brand": "MISUBISHI",
+      "model": "K64TENSRU",
+      "color": "เทา",
+      "plateNumber": "บฉ 2856",
+      "province": "กระบี่",
+      "year": "2005",
+      "vin": "MMT0NK64A5D001814",
+      "engineNo": "4D56TVAB3405",
+      "status": "active",
+      "notes": "",
+      "createdBy": "พัควลัญชญ์ อุไรล้ำ (พนักงานไอที)",
+      "createdAt": "2026-08-27T08:02:23.208Z"
+    },
+    {
       "id": "veh-1787817553656",
       "code": "CK-12",
       "name": "มิตซู",
