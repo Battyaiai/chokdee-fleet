@@ -21,7 +21,7 @@
         </div>
         <div>
           <h3 class="text-base font-bold text-blue-950">
-            วิธีตั้งค่า LINE Notify / LINE Bot เข้ากลุ่มร้านโชคดีค้าข้าว
+            วิธีตั้งค่า LINE Notify / LINE Bot เข้ากลุ่มโชคดีค้าข้าว
           </h3>
           <p class="text-xs text-blue-800/80 mt-0.5">
             ทำตาม 3 ขั้นตอนง่ายๆ เพื่อให้ระบบส่งแจ้งเตือนต่อทะเบียนรถ พ.ร.บ. ประกันภัย และเปลี่ยนน้ำมันเครื่องอัตโนมัติ
@@ -46,7 +46,7 @@
             เชิญ LINE Bot เข้ากลุ่มทำงาน
           </div>
           <p class="text-slate-600 leading-relaxed">
-            เปิด LINE ในมือถือ เพิ่มเพื่อน LINE Bot ที่สร้างไว้ แล้วกด <strong>"เชิญเข้ากลุ่ม LINE ที่ทำงาน"</strong> ของร้านโชคดีค้าข้าว
+            เปิด LINE ในมือถือ เพิ่มเพื่อน LINE Bot ที่สร้างไว้ แล้วกด <strong>"เชิญเข้ากลุ่ม LINE ที่ทำงาน"</strong> ของโชคดีค้าข้าว
           </p>
         </div>
 
@@ -572,18 +572,71 @@
       </div>
     </div>
 
-    <!-- 8. Danger Zone / Reset -->
+    <!-- 8. Database Backup & Restore Section -->
+    <div class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+            <Database :size="20" />
+          </div>
+          <div>
+            <h4 class="text-base font-bold text-slate-900 leading-tight">
+              สำรองและกู้คืนฐานข้อมูล (Backup & Restore)
+            </h4>
+            <p class="text-xs text-slate-500 mt-0.5">
+              ดาวน์โหลดไฟล์ฐานข้อมูล JSON เก็บไว้ในเครื่องคอมพิวเตอร์ หรือกู้คืนข้อมูลกลับมาได้ทุกเมื่อ
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <input 
+            type="file" 
+            ref="fileInputRef" 
+            accept=".json,application/json" 
+            class="hidden" 
+            @change="handleFileUpload" 
+          />
+          <AppButton 
+            variant="secondary" 
+            size="sm" 
+            @click="handleTriggerFileInput"
+            :loading="isImporting"
+          >
+            <Upload :size="14" />
+            <span>กู้คืนข้อมูล (Upload JSON)</span>
+          </AppButton>
+          <AppButton 
+            variant="primary" 
+            size="sm" 
+            @click="handleDownloadBackup"
+            :loading="isExporting"
+          >
+            <Download :size="14" />
+            <span>ดาวน์โหลดสำรอง (Backup JSON)</span>
+          </AppButton>
+        </div>
+      </div>
+
+      <div v-if="backupFeedback" :class="['text-xs p-3 rounded-lg border flex items-center gap-2', backupFeedback.success ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200']">
+        <CheckCircle2 v-if="backupFeedback.success" :size="15" class="shrink-0 text-emerald-600" />
+        <XCircle v-else :size="15" class="shrink-0 text-rose-600" />
+        <span>{{ backupFeedback.message }}</span>
+      </div>
+    </div>
+
+    <!-- 9. Danger Zone / Reset -->
     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="space-y-1">
         <h4 class="text-sm font-bold text-slate-900">
-          รีเซ็ตข้อมูลตัวอย่างร้านโชคดีค้าข้าว
+          รีเซ็ตข้อมูลตัวอย่างโชคดีค้าข้าว
         </h4>
         <p class="text-xs text-slate-500">
           หากต้องการคืนค่าข้อมูลเริ่มต้น (รถบรรทุก 10 ล้อ, 6 ล้อ, กระบะตู้ทึบ, รถตรวจงาน) สามารถกดรีเซ็ตได้
         </p>
       </div>
       <AppButton variant="secondary" size="sm" @click="handleResetData">
-        <Database :size="14" />
+        <RotateCcw :size="14" />
         <span>คืนค่าข้อมูลตัวอย่าง</span>
       </AppButton>
     </div>
@@ -657,7 +710,9 @@ import {
   UserPlus,
   Star,
   Edit2,
-  Trash2
+  Trash2,
+  Download,
+  Upload
 } from 'lucide-vue-next';
 import { useAuth } from '../composables/useAuth';
 import { useCloudSync } from '../composables/useCloudSync';
@@ -677,6 +732,71 @@ const oldPinInput = ref('');
 const newPinInput = ref('');
 const pinFeedback = ref(null);
 const syncFeedback = ref(null);
+
+// Database Backup & Restore State
+const isExporting = ref(false);
+const isImporting = ref(false);
+const backupFeedback = ref(null);
+const fileInputRef = ref(null);
+
+const handleDownloadBackup = async () => {
+  try {
+    isExporting.value = true;
+    const res = await api.backupDatabase();
+    const dataStr = JSON.stringify(res.data, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const date = new Date().toISOString().slice(0, 10);
+    link.download = `chokdee_fleet_backup_${date}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    backupFeedback.value = { success: true, message: 'ดาวน์โหลดไฟล์สำรองข้อมูล (JSON) สำเร็จเรียบร้อยแล้ว!' };
+  } catch (err) {
+    backupFeedback.value = { success: false, message: 'เกิดข้อผิดพลาดในการดาวน์โหลดสำรอง: ' + err.message };
+  } finally {
+    isExporting.value = false;
+  }
+};
+
+const handleTriggerFileInput = () => {
+  if (fileInputRef.value) {
+    fileInputRef.value.value = '';
+    fileInputRef.value.click();
+  }
+};
+
+const handleFileUpload = async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+
+    if (!parsed.vehicles || !Array.isArray(parsed.vehicles)) {
+      throw new Error('โครงสร้างไฟล์ไม่ถูกต้อง (ไม่พบข้อมูล vehicles)');
+    }
+
+    const confirmMsg = `ยืนยันการนำเข้าข้อมูลสำรอง?\n\n- จำนวนรถ: ${parsed.vehicles?.length || 0} คัน\n- บันทึกประกันภัย: ${parsed.insurances?.length || 0} รายการ\n- บันทึก พ.ร.บ.: ${parsed.prbs?.length || 0} รายการ\n- บันทึกภาษี/ทะเบียน: ${parsed.taxes?.length || 0} รายการ\n- บันทึกน้ำมัน: ${parsed.oilChanges?.length || 0} รายการ\n- บันทึกซ่อมบำรุง: ${parsed.maintenances?.length || 0} รายการ\n\n* ข้อมูลเดิมในระบบจะถูกแทนที่ด้วยข้อมูลจากไฟล์นี้`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    isImporting.value = true;
+    const res = await api.restoreDatabase(parsed);
+    if (res.success) {
+      backupFeedback.value = { success: true, message: 'กู้คืนฐานข้อมูลจากไฟล์สำรองสำเร็จเรียบร้อยแล้ว!' };
+      emit('dataReset');
+    }
+  } catch (err) {
+    backupFeedback.value = { success: false, message: 'เกิดข้อผิดพลาดในการกู้คืนข้อมูล: ' + err.message };
+  } finally {
+    isImporting.value = false;
+  }
+};
 
 // Staff Modal State
 const isStaffModalOpen = ref(false);
@@ -883,7 +1003,7 @@ const handleRetryLog = async (logId) => {
 };
 
 const handleResetData = async () => {
-  if (window.confirm('คุณต้องการรีเซ็ตข้อมูลตัวอย่างทั้งหมดของร้านโชคดีค้าข้าวกลับสู่ค่าเริ่มต้นใช่หรือไม่?')) {
+  if (window.confirm('คุณต้องการรีเซ็ตข้อมูลตัวอย่างทั้งหมดของโชคดีค้าข้าวกลับสู่ค่าเริ่มต้นใช่หรือไม่?')) {
     try {
       await api.resetSeedData();
       alert('รีเซ็ตข้อมูลตัวอย่างเรียบร้อยแล้ว');

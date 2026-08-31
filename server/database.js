@@ -43,7 +43,8 @@ export const db = {
   // Vehicles
   getVehicles() {
     const data = loadDB();
-    return data.vehicles || [];
+    const list = data.vehicles || [];
+    return [...list].sort((a, b) => (a.code || '').localeCompare(b.code || '', undefined, { numeric: true, sensitivity: 'base' }));
   },
   getVehicleById(id) {
     const data = loadDB();
@@ -51,16 +52,23 @@ export const db = {
   },
   createVehicle(vehicle) {
     const data = loadDB();
+    const existingCodes = (data.vehicles || []).map(v => {
+      const match = (v.code || '').match(/\d+/);
+      return match ? parseInt(match[0], 10) : 0;
+    });
+    const maxNum = existingCodes.length > 0 ? Math.max(...existingCodes, 0) : 0;
+    const defaultCode = `CK-${String(maxNum + 1).padStart(2, '0')}`;
+
     const newVehicle = {
       id: vehicle.id || `veh-${Date.now()}`,
-      code: vehicle.code || `CK-${String((data.vehicles?.length || 0) + 1).padStart(2, '0')}`,
+      code: vehicle.code || defaultCode,
       name: vehicle.name || '',
-      type: vehicle.type || 'รถกระบะ',
+      type: vehicle.type || 'รถกระบะตอนเดียว',
       brand: vehicle.brand || '',
       model: vehicle.model || '',
       color: vehicle.color || '',
       plateNumber: vehicle.plateNumber || '',
-      province: vehicle.province || 'กรุงเทพมหานคร',
+      province: vehicle.province || 'นครปฐม',
       year: vehicle.year || new Date().getFullYear().toString(),
       vin: vehicle.vin || '',
       engineNo: vehicle.engineNo || '',
@@ -69,7 +77,7 @@ export const db = {
       createdBy: vehicle.createdBy || 'ผู้ดูแลระบบ',
       createdAt: vehicle.createdAt || new Date().toISOString()
     };
-    data.vehicles = [newVehicle, ...(data.vehicles || [])];
+    data.vehicles = [...(data.vehicles || []), newVehicle];
     saveDB(data);
     return newVehicle;
   },
@@ -446,9 +454,26 @@ export const db = {
     return members;
   },
 
+  // Backup & Restore
+  backupDB() {
+    return loadDB();
+  },
+  restoreDB(newData) {
+    if (!newData || typeof newData !== 'object') {
+      throw new Error('ข้อมูลสำรองไม่ถูกต้อง (Invalid Backup Structure)');
+    }
+    // Safety check: ensure at least vehicles or some essential keys exist
+    if (!Array.isArray(newData.vehicles)) {
+      throw new Error('ไฟล์สำรองไม่มีข้อมูลรายการรถ (Missing vehicles array)');
+    }
+    saveDB(newData);
+    return true;
+  },
+
   // Reset to seed data
   resetToSeed() {
     saveDB(initialSeedData);
     return initialSeedData;
   }
 };
+

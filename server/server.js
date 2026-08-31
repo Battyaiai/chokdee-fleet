@@ -62,168 +62,210 @@ app.get('/api/dashboard/stats', (req, res) => {
 
     const vehicleMap = new Map(vehicles.map(v => [v.id, v]));
 
-    // Collect all action items
+    // Find latest document per vehicle to prevent historical duplicates
+    const latestInsMap = new Map();
+    for (const ins of insuranceDocs) {
+      if (!ins.vehicleId || !ins.endDate) continue;
+      const existing = latestInsMap.get(ins.vehicleId);
+      if (!existing || new Date(ins.endDate) > new Date(existing.endDate)) {
+        latestInsMap.set(ins.vehicleId, ins);
+      }
+    }
+
+    const latestTaxMap = new Map();
+    for (const tax of taxDocs) {
+      if (!tax.vehicleId || !tax.expireDate) continue;
+      const existing = latestTaxMap.get(tax.vehicleId);
+      if (!existing || new Date(tax.expireDate) > new Date(existing.expireDate)) {
+        latestTaxMap.set(tax.vehicleId, tax);
+      }
+    }
+
+    const latestPrbMap = new Map();
+    for (const prb of prbDocs) {
+      if (!prb.vehicleId || !prb.endDate) continue;
+      const existing = latestPrbMap.get(prb.vehicleId);
+      if (!existing || new Date(prb.endDate) > new Date(existing.endDate)) {
+        latestPrbMap.set(prb.vehicleId, prb);
+      }
+    }
+
+    const latestOilMap = new Map();
+    for (const oil of oilChanges) {
+      if (!oil.vehicleId || !oil.changeDate) continue;
+      const existing = latestOilMap.get(oil.vehicleId);
+      if (!existing || new Date(oil.changeDate) > new Date(existing.changeDate)) {
+        latestOilMap.set(oil.vehicleId, oil);
+      }
+    }
+
+    // Collect all action items from active vehicles only
     const actionItems = [];
     let insAlertCount = 0;
     let taxAlertCount = 0;
     let prbAlertCount = 0;
 
-    // Check Insurance (Alert if within 2 calendar months or expired)
-    for (const ins of insuranceDocs) {
-      const veh = vehicleMap.get(ins.vehicleId);
-      if (!veh || veh.status !== 'active' || !ins.endDate) continue;
-      
-      const days = getDaysDiff(ins.endDate);
-      const isDueSoon = isWithinCalendarMonths(ins.endDate, 2);
+    for (const veh of vehicles) {
+      if (veh.status !== 'active') continue;
 
-      if (isDueSoon || days <= 60) {
-        insAlertCount++;
-        let statusText = 'ปกติ';
-        let statusType = 'normal'; // normal, warning, urgent, expired
+      // 1. Check Latest Insurance
+      const ins = latestInsMap.get(veh.id);
+      if (ins && ins.endDate) {
+        const days = getDaysDiff(ins.endDate);
+        const isDueSoon = isWithinCalendarMonths(ins.endDate, 2);
 
-        if (days < 0) {
-          statusText = 'หมดอายุแล้ว';
-          statusType = 'expired';
-        } else if (days <= 7) {
-          statusText = 'ใกล้หมดอายุ (เร่งด่วน)';
-          statusType = 'urgent';
-        } else if (days <= 30) {
-          statusText = 'ใกล้หมดอายุ';
-          statusType = 'warning';
-        } else {
-          statusText = 'ใกล้ครบกำหนด';
-          statusType = 'warning';
+        if (isDueSoon || days <= 60) {
+          insAlertCount++;
+          let statusText = 'ปกติ';
+          let statusType = 'normal';
+
+          if (days < 0) {
+            statusText = 'หมดอายุแล้ว';
+            statusType = 'expired';
+          } else if (days <= 7) {
+            statusText = 'ใกล้หมดอายุ (เร่งด่วน)';
+            statusType = 'urgent';
+          } else if (days <= 30) {
+            statusText = 'ใกล้หมดอายุ (เตือน 1 เดือน)';
+            statusType = 'warning';
+          } else {
+            statusText = 'ใกล้ครบกำหนด (เตือน 2 เดือน)';
+            statusType = 'warning';
+          }
+
+          actionItems.push({
+            id: `alert-ins-${ins.id}`,
+            docId: ins.id,
+            type: 'insurance',
+            typeName: 'ประกันภัย',
+            vehicleId: veh.id,
+            vehiclePlate: `${veh.plateNumber} ${veh.province}`,
+            vehicleName: `${veh.brand} ${veh.model} (${veh.name})`,
+            vehicleCode: veh.code,
+            dueDate: ins.endDate,
+            dueDateFormatted: formatThaiDate(ins.endDate),
+            daysRemaining: days,
+            statusText,
+            statusType,
+            companyOrNo: ins.company || ins.policyNumber || '-',
+            rawDoc: ins
+          });
         }
-
-        actionItems.push({
-          id: `alert-ins-${ins.id}`,
-          type: 'insurance',
-          typeName: 'ประกันภัย',
-          vehicleId: veh.id,
-          vehiclePlate: `${veh.plateNumber} ${veh.province}`,
-          vehicleName: `${veh.brand} ${veh.model} (${veh.name})`,
-          vehicleCode: veh.code,
-          dueDate: ins.endDate,
-          dueDateFormatted: formatThaiDate(ins.endDate),
-          daysRemaining: days,
-          statusText,
-          statusType,
-          companyOrNo: ins.company || ins.policyNumber || '-'
-        });
       }
-    }
 
-    // Check Tax (Alert if within 3 calendar months or expired)
-    for (const tax of taxDocs) {
-      const veh = vehicleMap.get(tax.vehicleId);
-      if (!veh || veh.status !== 'active' || !tax.expireDate) continue;
+      // 2. Check Latest Tax (ต่อทะเบียน)
+      const tax = latestTaxMap.get(veh.id);
+      if (tax && tax.expireDate) {
+        const days = getDaysDiff(tax.expireDate);
+        const isDueSoon = isWithinCalendarMonths(tax.expireDate, 3);
 
-      const days = getDaysDiff(tax.expireDate);
-      const isDueSoon = isWithinCalendarMonths(tax.expireDate, 3);
+        if (isDueSoon || days <= 90) {
+          taxAlertCount++;
+          let statusText = 'ปกติ';
+          let statusType = 'normal';
 
-      if (isDueSoon || days <= 90) {
-        taxAlertCount++;
-        let statusText = 'ปกติ';
-        let statusType = 'normal';
+          if (days < 0) {
+            statusText = 'เกินกำหนดต่อทะเบียน';
+            statusType = 'expired';
+          } else if (days <= 7) {
+            statusText = 'ใกล้ครบกำหนด (เร่งด่วน)';
+            statusType = 'urgent';
+          } else if (days <= 30) {
+            statusText = 'ใกล้ครบกำหนด (เตือน 1 เดือน)';
+            statusType = 'warning';
+          } else {
+            statusText = 'ใกล้ครบกำหนด (เตือน 3 เดือน)';
+            statusType = 'warning';
+          }
 
-        if (days < 0) {
-          statusText = 'หมดอายุแล้ว';
-          statusType = 'expired';
-        } else if (days <= 7) {
-          statusText = 'ใกล้ครบกำหนด (เร่งด่วน)';
-          statusType = 'urgent';
-        } else if (days <= 30) {
-          statusText = 'ใกล้ครบกำหนด';
-          statusType = 'warning';
-        } else {
-          statusText = 'ใกล้ครบกำหนด';
-          statusType = 'warning';
+          actionItems.push({
+            id: `alert-tax-${tax.id}`,
+            docId: tax.id,
+            type: 'tax',
+            typeName: 'ต่อทะเบียน',
+            vehicleId: veh.id,
+            vehiclePlate: `${veh.plateNumber} ${veh.province}`,
+            vehicleName: `${veh.brand} ${veh.model} (${veh.name})`,
+            vehicleCode: veh.code,
+            dueDate: tax.expireDate,
+            dueDateFormatted: formatThaiDate(tax.expireDate),
+            daysRemaining: days,
+            statusText,
+            statusType,
+            companyOrNo: tax.plateNumber || '-',
+            rawDoc: tax
+          });
         }
-
-        actionItems.push({
-          id: `alert-tax-${tax.id}`,
-          type: 'tax',
-          typeName: 'ต่อทะเบียน',
-          vehicleId: veh.id,
-          vehiclePlate: `${veh.plateNumber} ${veh.province}`,
-          vehicleName: `${veh.brand} ${veh.model} (${veh.name})`,
-          vehicleCode: veh.code,
-          dueDate: tax.expireDate,
-          dueDateFormatted: formatThaiDate(tax.expireDate),
-          daysRemaining: days,
-          statusText,
-          statusType,
-          companyOrNo: tax.plateNumber || '-'
-        });
       }
-    }
 
-    // Check PRB (Alert if within 2 calendar months or expired)
-    for (const prb of prbDocs) {
-      const veh = vehicleMap.get(prb.vehicleId);
-      if (!veh || veh.status !== 'active' || !prb.endDate) continue;
+      // 3. Check Latest PRB (พ.ร.บ.)
+      const prb = latestPrbMap.get(veh.id);
+      if (prb && prb.endDate) {
+        const days = getDaysDiff(prb.endDate);
+        const isDueSoon = isWithinCalendarMonths(prb.endDate, 2);
 
-      const days = getDaysDiff(prb.endDate);
-      const isDueSoon = isWithinCalendarMonths(prb.endDate, 2);
+        if (isDueSoon || days <= 60) {
+          prbAlertCount++;
+          let statusText = 'ปกติ';
+          let statusType = 'normal';
 
-      if (isDueSoon || days <= 60) {
-        prbAlertCount++;
-        let statusText = 'ปกติ';
-        let statusType = 'normal';
+          if (days < 0) {
+            statusText = 'พ.ร.บ. หมดอายุแล้ว';
+            statusType = 'expired';
+          } else if (days <= 7) {
+            statusText = 'ใกล้หมดอายุ (เร่งด่วน)';
+            statusType = 'urgent';
+          } else if (days <= 30) {
+            statusText = 'ใกล้หมดอายุ (เตือน 1 เดือน)';
+            statusType = 'warning';
+          } else {
+            statusText = 'ใกล้ครบกำหนด (เตือน 2 เดือน)';
+            statusType = 'warning';
+          }
 
-        if (days < 0) {
-          statusText = 'หมดอายุแล้ว';
-          statusType = 'expired';
-        } else if (days <= 7) {
-          statusText = 'ใกล้หมดอายุ (เร่งด่วน)';
-          statusType = 'urgent';
-        } else if (days <= 30) {
-          statusText = 'ใกล้หมดอายุ';
-          statusType = 'warning';
-        } else {
-          statusText = 'ใกล้ครบกำหนด';
-          statusType = 'warning';
+          actionItems.push({
+            id: `alert-prb-${prb.id}`,
+            docId: prb.id,
+            type: 'prb',
+            typeName: 'พ.ร.บ.',
+            vehicleId: veh.id,
+            vehiclePlate: `${veh.plateNumber} ${veh.province}`,
+            vehicleName: `${veh.brand} ${veh.model} (${veh.name})`,
+            vehicleCode: veh.code,
+            dueDate: prb.endDate,
+            dueDateFormatted: formatThaiDate(prb.endDate),
+            daysRemaining: days,
+            statusText,
+            statusType,
+            companyOrNo: prb.prbNumber || '-',
+            rawDoc: prb
+          });
         }
-
-        actionItems.push({
-          id: `alert-prb-${prb.id}`,
-          type: 'prb',
-          typeName: 'พ.ร.บ.',
-          vehicleId: veh.id,
-          vehiclePlate: `${veh.plateNumber} ${veh.province}`,
-          vehicleName: `${veh.brand} ${veh.model} (${veh.name})`,
-          vehicleCode: veh.code,
-          dueDate: prb.endDate,
-          dueDateFormatted: formatThaiDate(prb.endDate),
-          daysRemaining: days,
-          statusText,
-          statusType,
-          companyOrNo: prb.prbNumber || '-'
-        });
       }
-    }
 
-    // Check Oil Change schedule alerts (if nextChangeDate is <= 14 days)
-    for (const oil of oilChanges) {
-      const veh = vehicleMap.get(oil.vehicleId);
-      if (!veh || veh.status !== 'active' || !oil.nextChangeDate) continue;
-      const days = getDaysDiff(oil.nextChangeDate);
-      if (days !== null && days <= 14) {
-        actionItems.push({
-          id: `alert-oil-${oil.id}`,
-          type: 'oil',
-          typeName: 'เปลี่ยนน้ำมันเครื่อง',
-          vehicleId: veh.id,
-          vehiclePlate: `${veh.plateNumber} ${veh.province}`,
-          vehicleName: `${veh.brand} ${veh.model} (${veh.name})`,
-          vehicleCode: veh.code,
-          dueDate: oil.nextChangeDate,
-          dueDateFormatted: formatThaiDate(oil.nextChangeDate),
-          daysRemaining: days,
-          statusText: days < 0 ? 'เลยกำหนดเปลี่ยน' : 'ถึงรอบเปลี่ยน',
-          statusType: days < 0 ? 'expired' : 'warning',
-          companyOrNo: oil.nextMileage ? `เป้าหมาย ${oil.nextMileage.toLocaleString()} กม.` : '-'
-        });
+      // 4. Check Latest Oil Change
+      const oil = latestOilMap.get(veh.id);
+      if (oil && oil.nextChangeDate) {
+        const days = getDaysDiff(oil.nextChangeDate);
+        if (days !== null && days <= 14) {
+          actionItems.push({
+            id: `alert-oil-${oil.id}`,
+            docId: oil.id,
+            type: 'oil',
+            typeName: 'เปลี่ยนน้ำมันเครื่อง',
+            vehicleId: veh.id,
+            vehiclePlate: `${veh.plateNumber} ${veh.province}`,
+            vehicleName: `${veh.brand} ${veh.model} (${veh.name})`,
+            vehicleCode: veh.code,
+            dueDate: oil.nextChangeDate,
+            dueDateFormatted: formatThaiDate(oil.nextChangeDate),
+            daysRemaining: days,
+            statusText: days < 0 ? 'เลยกำหนดเปลี่ยน' : 'ถึงรอบเปลี่ยน',
+            statusType: days < 0 ? 'expired' : 'warning',
+            companyOrNo: oil.nextMileage ? `เป้าหมาย ${oil.nextMileage.toLocaleString()} กม.` : '-',
+            rawDoc: oil
+          });
+        }
       }
     }
 
@@ -867,6 +909,29 @@ app.get('/api/reports/fleet', (req, res) => {
     res.json({ success: true, data: report });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Backup & Restore Database
+app.get('/api/backup', (req, res) => {
+  try {
+    const rawData = db.backupDB();
+    const todayStr = new Date().toISOString().split('T')[0];
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="chokdee_fleet_backup_${todayStr}.json"`);
+    res.json(rawData);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/restore', (req, res) => {
+  try {
+    const backupData = req.body;
+    db.restoreDB(backupData);
+    res.json({ success: true, message: 'กู้คืนฐานข้อมูลสำเร็จเรียบร้อยแล้ว' });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 

@@ -30,6 +30,7 @@
           @navigateToDocuments="currentView = 'documents'"
           @navigateToOil="currentView = 'oil'"
           @navigateToMaintenance="currentView = 'maintenance'"
+          @renewDocument="handleRenewDocument"
         />
 
         <VehiclesView 
@@ -38,16 +39,23 @@
           :selectedVehicleId="selectedVehicleId"
           @selectVehicle="handleSelectVehicle"
           @clearSelectedVehicle="selectedVehicleId = null"
+          @renewDocument="handleRenewDocument"
         />
 
         <DocumentsView 
           v-else-if="currentView === 'documents'"
           :key="`doc-${refreshKey}`"
+          :renewPayload="renewTarget"
+          @clearRenewPayload="renewTarget = null"
+          @documentSaved="handleRefresh"
         />
 
         <OilChangeView 
           v-else-if="currentView === 'oil'"
           :key="`oil-${refreshKey}`"
+          :renewPayload="renewTarget"
+          @clearRenewPayload="renewTarget = null"
+          @recordSaved="handleRefresh"
         />
 
         <MaintenanceView 
@@ -94,11 +102,22 @@ import { useAuth } from './composables/useAuth';
 
 const currentView = ref('dashboard');
 const selectedVehicleId = ref(null);
+const renewTarget = ref(null);
 const alertCount = ref(0);
 const refreshKey = ref(0);
 const isMobileMenuOpen = ref(false);
 
 const { isAdmin, isLoginModalOpen } = useAuth();
+
+const handleRenewDocument = (target) => {
+  renewTarget.value = target;
+  if (target?.type === 'oil') {
+    currentView.value = 'oil';
+  } else {
+    currentView.value = 'documents';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 // Redirect to dashboard if logged out while on settings
 watch(isAdmin, (newVal) => {

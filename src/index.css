@@ -58,7 +58,7 @@
     margin: 0 !important;
   }
 
-  /* Table full-width A4 fitting */
+  /* Table full-width A4 fitting with clean page breaks */
   table {
     width: 100% !important;
     min-width: 0 !important;
@@ -66,16 +66,42 @@
     table-layout: auto !important;
     border-collapse: collapse !important;
     font-size: 8.5pt !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  tbody {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    break-inside: avoid-page !important;
+    page-break-after: auto !important;
   }
 
   table th,
   table td {
-    padding: 4px 4px !important;
+    padding: 5px 6px !important;
     font-size: 8.5pt !important;
     line-height: 1.25 !important;
     word-break: break-word !important;
     white-space: normal !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    border: 1px solid #cbd5e1 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   table thead th {
@@ -83,6 +109,14 @@
     color: #0f172a !important;
     font-weight: 700 !important;
     border-bottom: 2px solid #94a3b8 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  tr:nth-child(even) td {
+    background-color: #f8fafc !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Hide UI elements on print */
@@ -102,6 +136,8 @@
     margin-bottom: 12px;
     border-bottom: 2px solid #0f172a;
     padding-bottom: 6px;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   /* Status Badge compact print */

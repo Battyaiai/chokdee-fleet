@@ -112,7 +112,7 @@
             <span>Admin PIN</span>
           </button>
         </div>
-        <div class="text-slate-500">ร้านโชคดีค้าข้าว (CHOKDEE)</div>
+        <div class="text-slate-500">โชคดีค้าข้าว (CHOKDEE)</div>
       </div>
     </aside>
   </div>

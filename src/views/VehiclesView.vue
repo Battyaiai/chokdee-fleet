@@ -132,8 +132,30 @@
             <p class="font-bold text-slate-800 text-base mt-0.5">{{ detailVehicle.plateNumber }} ({{ detailVehicle.province }})</p>
           </div>
           <div>
-            <span class="text-xs font-medium text-slate-400 block">ผู้บันทึกข้อมูล:</span>
-            <p class="font-semibold text-slate-800 mt-0.5">{{ detailVehicle.createdBy || '-' }}</p>
+            <span class="text-xs font-medium text-slate-400 block">ประเภทรถ:</span>
+            <p class="font-semibold text-slate-800 mt-0.5">{{ detailVehicle.type || '-' }}</p>
+          </div>
+          <div>
+            <span class="text-xs font-medium text-slate-400 block">สถานะการใช้งาน:</span>
+            <div class="mt-0.5">
+              <StatusBadge :status="detailVehicle.status" type="vehicleStatus" />
+            </div>
+          </div>
+          <div>
+            <span class="text-xs font-medium text-slate-400 block">สีรถ:</span>
+            <p class="font-semibold text-slate-800 mt-0.5">{{ detailVehicle.color || '-' }}</p>
+          </div>
+          <div>
+            <span class="text-xs font-medium text-slate-400 block">ปีจดทะเบียน:</span>
+            <p class="font-semibold text-slate-800 mt-0.5">{{ detailVehicle.year || '-' }}</p>
+          </div>
+          <div>
+            <span class="text-xs font-medium text-slate-400 block">เลขตัวรถ / คัสซี (VIN):</span>
+            <p class="font-mono font-bold text-blue-900 mt-0.5 select-all">{{ detailVehicle.vin || '-' }}</p>
+          </div>
+          <div>
+            <span class="text-xs font-medium text-slate-400 block">เลขเครื่องยนต์:</span>
+            <p class="font-mono font-bold text-slate-900 mt-0.5 select-all">{{ detailVehicle.engineNo || '-' }}</p>
           </div>
           <div>
             <span class="text-xs font-medium text-slate-400 block">วันที่เพิ่มข้อมูล:</span>
@@ -161,7 +183,7 @@
           </div>
           <div v-else class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">
+              <thead class="bg-slate-50 text-base font-bold text-slate-800 border-b border-slate-200">
                 <tr>
                   <th class="px-5 py-3">บริษัทประกัน</th>
                   <th class="px-5 py-3">เลขกรมธรรม์</th>
@@ -169,6 +191,7 @@
                   <th class="px-5 py-3">วันหมดประกัน</th>
                   <th class="px-5 py-3">เบี้ยประกัน</th>
                   <th class="px-5 py-3">สถานะวันหมดอายุ</th>
+                  <th v-if="isAdmin" class="px-5 py-3 text-center w-28">จัดการ</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -180,6 +203,16 @@
                   <td class="px-5 py-3 font-medium">฿{{ (ins.premiumAmount || 0).toLocaleString() }}</td>
                   <td class="px-5 py-3">
                     <StatusBadge :days="calcDaysRemaining(ins.endDate)" />
+                  </td>
+                  <td v-if="isAdmin" class="px-5 py-3 text-center">
+                    <button 
+                      class="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-lg transition-colors border border-blue-200 text-xs font-semibold inline-flex items-center gap-1 shadow-2xs"
+                      @click="handleQuickRenew(ins, 'insurance')"
+                      type="button"
+                    >
+                      <Sparkles :size="12" class="text-amber-500" />
+                      <span>ต่ออายุ</span>
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -205,6 +238,7 @@
                   <th class="px-5 py-3">วันหมดอายุ</th>
                   <th class="px-5 py-3">ค่าใช้จ่าย</th>
                   <th class="px-5 py-3">สถานะวันหมดอายุ</th>
+                  <th v-if="isAdmin" class="px-5 py-3 text-center w-28">จัดการ</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -215,6 +249,16 @@
                   <td class="px-5 py-3 font-medium">฿{{ (prb.cost || 0).toLocaleString() }}</td>
                   <td class="px-5 py-3">
                     <StatusBadge :days="calcDaysRemaining(prb.endDate)" />
+                  </td>
+                  <td v-if="isAdmin" class="px-5 py-3 text-center">
+                    <button 
+                      class="px-2.5 py-1 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white rounded-lg transition-colors border border-rose-200 text-xs font-semibold inline-flex items-center gap-1 shadow-2xs"
+                      @click="handleQuickRenew(prb, 'prb')"
+                      type="button"
+                    >
+                      <Sparkles :size="12" class="text-amber-500" />
+                      <span>ต่ออายุ</span>
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -240,6 +284,7 @@
                   <th class="px-5 py-3">วันครบกำหนด</th>
                   <th class="px-5 py-3">ค่าต่อทะเบียน</th>
                   <th class="px-5 py-3">สถานะครบกำหนด</th>
+                  <th v-if="isAdmin" class="px-5 py-3 text-center w-28">จัดการ</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -251,6 +296,16 @@
                   <td class="px-5 py-3">
                     <StatusBadge :days="calcDaysRemaining(tax.expireDate)" />
                   </td>
+                  <td v-if="isAdmin" class="px-5 py-3 text-center">
+                    <button 
+                      class="px-2.5 py-1 bg-amber-50 text-amber-800 hover:bg-amber-600 hover:text-white rounded-lg transition-colors border border-amber-200 text-xs font-semibold inline-flex items-center gap-1 shadow-2xs"
+                      @click="handleQuickRenew(tax, 'tax')"
+                      type="button"
+                    >
+                      <Sparkles :size="12" class="text-amber-600" />
+                      <span>ต่ออายุ</span>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -260,9 +315,20 @@
 
       <!-- Tab 3: Oil Changes -->
       <div v-else-if="activeTab === 'oil'" class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
-          <Droplet :size="18" class="text-blue-600" />
-          <h4 class="font-bold text-sm text-slate-900">ประวัติเปลี่ยนถ่ายน้ำมันเครื่อง ({{ detailVehicle.plateNumber }})</h4>
+        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <Droplet :size="18" class="text-blue-600" />
+            <h4 class="font-bold text-sm text-slate-900">ประวัติเปลี่ยนถ่ายน้ำมันเครื่อง ({{ detailVehicle.plateNumber }})</h4>
+          </div>
+          <button 
+            v-if="isAdmin"
+            class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shadow-2xs"
+            @click="handleQuickRenew({ vehicleId: detailVehicle.id }, 'oil')"
+            type="button"
+          >
+            <Plus :size="14" />
+            <span>บันทึกเปลี่ยนถ่ายน้ำมันเครื่อง</span>
+          </button>
         </div>
         <div v-if="(detailVehicle.oilChanges || []).length === 0" class="p-8 text-center text-sm text-slate-400">
           ยังไม่มีประวัติเปลี่ยนถ่ายน้ำมันเครื่อง
@@ -277,7 +343,6 @@
                 <th class="px-5 py-3 text-right">ค่าใช้จ่าย</th>
                 <th class="px-5 py-3">นัดครั้งต่อไป</th>
                 <th class="px-5 py-3">เลขไมล์เป้าหมาย</th>
-                <th class="px-5 py-3">ผู้บันทึก</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -288,7 +353,6 @@
                 <td class="px-5 py-3 text-right font-bold text-slate-900">฿{{ (oil.cost || 0).toLocaleString() }}</td>
                 <td class="px-5 py-3">{{ oil.nextChangeDate || '-' }}</td>
                 <td class="px-5 py-3">{{ oil.nextMileage ? `${oil.nextMileage.toLocaleString()} กม.` : '-' }}</td>
-                <td class="px-5 py-3 text-xs text-slate-500">{{ oil.createdBy || '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -313,7 +377,6 @@
                 <th class="px-5 py-3">รายละเอียดการซ่อม</th>
                 <th class="px-5 py-3">อู่ / ร้านซ่อม</th>
                 <th class="px-5 py-3 text-right">ค่าใช้จ่าย</th>
-                <th class="px-5 py-3">ผู้บันทึก</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -325,7 +388,6 @@
                 <td class="px-5 py-3 text-right font-bold text-rose-600">
                   ฿{{ (mnt.cost || 0).toLocaleString() }}
                 </td>
-                <td class="px-5 py-3 text-xs text-slate-500">{{ mnt.createdBy || '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -414,7 +476,7 @@
         <!-- Filter Controls & Add Button -->
         <div class="flex items-center gap-2">
           <select 
-            class="px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+            class="px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
             v-model="statusFilter"
           >
             <option value="all">สถานะทั้งหมด</option>
@@ -422,14 +484,14 @@
             <option value="inactive">ไม่ได้ใช้งาน</option>
           </select>
 
+          <!-- Action Buttons (Admin Only) -->
           <div v-if="isAdmin" class="flex items-center gap-2">
-            <AppButton variant="secondary" size="md" @click="handleOpenBulk">
-              <FileSpreadsheet :size="16" />
-              <span>นำเข้าจาก Excel / หลายคัน</span>
+            <AppButton variant="secondary" size="md" @click="handleOpenBulk" title="นำเข้าข้อมูลรถหลายคัน">
+              <FileSpreadsheet :size="18" />
+              <span class="hidden sm:inline">นำเข้า Excel</span>
             </AppButton>
-
             <AppButton variant="primary" size="md" @click="handleOpenAdd">
-              <Plus :size="16" />
+              <Plus :size="18" />
               <span>เพิ่มรถใหม่</span>
             </AppButton>
           </div>
@@ -439,23 +501,22 @@
       <!-- Vehicles Table -->
       <div class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm border-collapse min-w-[900px]">
-            <thead class="bg-slate-50 text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">
+          <table class="w-full text-left border-collapse min-w-[900px]">
+            <thead class="bg-slate-50 text-base font-bold text-slate-800 border-b border-slate-200">
               <tr>
-                <th class="px-5 py-3">รหัส</th>
-                <th class="px-5 py-3">ทะเบียนรถ / จังหวัด</th>
-                <th class="px-5 py-3">ยี่ห้อ - รุ่น</th>
-                <th class="px-5 py-3">ชื่อ / ประเภท</th>
-                <th class="px-5 py-3">สถานะรถ</th>
-                <th class="px-5 py-3">ประกันภัย</th>
-                <th class="px-5 py-3">ภาษี/ทะเบียน</th>
-                <th class="px-5 py-3">ผู้บันทึก</th>
-                <th class="px-5 py-3 text-center">จัดการ</th>
+                <th class="px-5 py-4 whitespace-nowrap">รหัส</th>
+                <th class="px-5 py-4 whitespace-nowrap">ทะเบียนรถ / จังหวัด</th>
+                <th class="px-5 py-4 min-w-[200px]">ยี่ห้อ - รุ่น</th>
+                <th class="px-5 py-4 min-w-[180px]">ชื่อ / ประเภท</th>
+                <th class="px-5 py-4 whitespace-nowrap">สถานะรถ</th>
+                <th class="px-5 py-4 whitespace-nowrap">ประกันภัย</th>
+                <th class="px-5 py-4 whitespace-nowrap">ภาษี/ทะเบียน</th>
+                <th class="px-5 py-4 text-center whitespace-nowrap w-36">จัดการ</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 text-slate-700">
               <tr v-if="filteredVehicles.length === 0">
-                <td colspan="9" class="text-center py-12 text-slate-400">
+                <td colspan="8" class="text-center py-12 text-slate-400 text-base">
                   <div v-if="vehicles.length === 0" class="flex flex-col items-center justify-center space-y-3 py-4">
                     <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-xs">
                       <Truck :size="28" />
@@ -478,7 +539,7 @@
                       กรุณาเข้าสู่ระบบผู้ดูแลระบบ (Admin) เพื่อเพิ่มข้อมูลรถ
                     </div>
                   </div>
-                  <div v-else class="py-6">
+                  <div v-else class="py-6 text-base">
                     ไม่พบข้อมูลรถตามเงื่อนไขที่ค้นหา
                   </div>
                 </td>
@@ -489,63 +550,80 @@
                 :key="v.id"
                 class="hover:bg-slate-50/80 transition-colors"
               >
-                <td class="px-5 py-3.5 whitespace-nowrap font-bold text-blue-600">
+                <td class="px-5 py-4.5 whitespace-nowrap font-extrabold text-blue-600 text-lg align-top">
                   {{ v.code }}
                 </td>
-                <td class="px-5 py-3.5 whitespace-nowrap">
-                  <div class="font-bold text-slate-900">{{ v.plateNumber }}</div>
-                  <div class="text-xs text-slate-400">{{ v.province }}</div>
+                <td class="px-5 py-4.5 whitespace-nowrap align-top">
+                  <div class="inline-block font-mono font-black text-lg bg-slate-100 text-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-300 shadow-2xs leading-tight">
+                    {{ v.plateNumber }}
+                  </div>
+                  <div class="text-sm font-bold text-slate-500 mt-1">
+                    {{ v.province }}
+                  </div>
+                  <div v-if="v.vin || v.engineNo" class="text-xs text-slate-600 font-mono mt-1.5 space-y-0.5 leading-tight">
+                    <div v-if="v.vin" class="break-words" :title="'เลขตัวรถ: ' + v.vin">
+                      <span class="text-slate-400 font-sans font-medium">คัสซี:</span> <span class="font-bold text-slate-800">{{ v.vin }}</span>
+                    </div>
+                    <div v-if="v.engineNo" class="break-words" :title="'เลขเครื่อง: ' + v.engineNo">
+                      <span class="text-slate-400 font-sans font-medium">เครื่อง:</span> <span class="font-bold text-slate-800">{{ v.engineNo }}</span>
+                    </div>
+                  </div>
                 </td>
-                <td class="px-5 py-3.5 whitespace-nowrap">
-                  <div class="font-semibold text-slate-800">{{ v.brand }} {{ v.model }}</div>
-                  <div class="text-xs text-slate-400">สี: {{ v.color || '-' }} | ปี {{ v.year || '-' }}</div>
+                <td class="px-5 py-4.5 align-top max-w-[240px]">
+                  <div class="font-bold text-slate-800 text-base leading-snug break-words">
+                    {{ v.brand }} {{ v.model }}
+                  </div>
+                  <div class="text-sm font-medium text-slate-500 mt-1">
+                    สี: {{ v.color || '-' }} | ปี {{ v.year || '-' }}
+                  </div>
                 </td>
-                <td class="px-5 py-3.5 whitespace-nowrap">
-                  <div class="text-slate-800 font-medium">{{ v.name }}</div>
-                  <div class="text-xs text-slate-400">{{ v.type }}</div>
+                <td class="px-5 py-4.5 align-top max-w-[200px]">
+                  <div v-if="v.name" class="font-bold text-blue-900 text-base bg-blue-100/90 px-2.5 py-0.5 rounded-lg border border-blue-200 shadow-2xs inline-block mb-1">
+                    {{ v.name }}
+                  </div>
+                  <div class="text-sm font-semibold text-blue-600 leading-snug">
+                    {{ v.type }}
+                  </div>
                 </td>
-                <td class="px-5 py-3.5 whitespace-nowrap">
+                <td class="px-5 py-4.5 align-top whitespace-nowrap">
                   <StatusBadge :status="v.status" type="vehicleStatus" />
                 </td>
-                <td class="px-5 py-3.5 whitespace-nowrap">
+                <td class="px-5 py-4.5 align-top whitespace-nowrap">
                   <StatusBadge v-if="v.latestInsurance" :days="v.insDaysRemaining" />
-                  <span v-else class="text-xs text-slate-400">-</span>
+                  <span v-else class="text-base text-slate-400">-</span>
                 </td>
-                <td class="px-5 py-3.5 whitespace-nowrap">
+                <td class="px-5 py-4.5 align-top whitespace-nowrap">
                   <StatusBadge v-if="v.latestTax" :days="v.taxDaysRemaining" />
-                  <span v-else class="text-xs text-slate-400">-</span>
+                  <span v-else class="text-base text-slate-400">-</span>
                 </td>
-                <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500">
-                  {{ v.createdBy || '-' }}
-                </td>
-                <td class="px-5 py-3.5 whitespace-nowrap text-center">
-                  <div class="inline-flex items-center gap-1.5">
+                <td class="px-5 py-4.5 align-top text-center whitespace-nowrap">
+                  <div class="inline-flex items-center gap-2 pt-0.5">
                     <AppButton 
                       variant="secondary" 
                       size="sm"
                       @click="emit('selectVehicle', v.id)"
                       title="ดูรายละเอียดประวัติทั้งหมด"
                     >
-                      <Eye :size="13" />
+                      <Eye :size="15" />
                       <span>ดูประวัติ</span>
                     </AppButton>
                     <button 
                       v-if="isAdmin"
-                      class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                      class="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors border border-slate-200 hover:border-blue-300"
                       @click="handleOpenEdit(v)"
                       title="แก้ไขข้อมูล"
                       type="button"
                     >
-                      <Edit2 :size="15" />
+                      <Edit2 :size="17" />
                     </button>
                     <button 
                       v-if="isAdmin"
-                      class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
+                      class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors border border-slate-200 hover:border-rose-300"
                       @click="handleDeleteVehicle(v)"
                       title="ลบข้อมูลรถ"
                       type="button"
                     >
-                      <Trash2 :size="15" />
+                      <Trash2 :size="17" />
                     </button>
                   </div>
                 </td>
@@ -565,174 +643,192 @@
       <form @submit.prevent="handleSaveVehicle" class="space-y-5">
         <!-- Section 1: ข้อมูลรถ -->
         <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
-            1. ข้อมูลรถพื้นฐาน
+          <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-1">
+            1. ข้อมูลทั่วไปของรถ
           </h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสรถประจำร้าน <span class="text-rose-500">*</span></label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">รหัสรถ <span class="text-rose-500">*</span></label>
               <input
                 type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.code"
                 placeholder="เช่น CK-01"
                 required
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ประเภทรถ</label>
-              <select class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs" v-model="formData.type">
-                <option value="รถบรรทุก 12 ล้อ">รถบรรทุก 12 ล้อ</option>
-                <option value="รถบรรทุก 10 ล้อ">รถบรรทุก 10 ล้อ</option>
-                <option value="รถบรรทุก 6 ล้อ">รถบรรทุก 6 ล้อ</option>
-                <option value="รถกระบะตอนเดียว">รถกระบะตอนเดียว (ตู้ทึบ/คอก)</option>
-                <option value="รถกระบะ 4 ประตู">รถกระบะ 4 ประตู</option>
-                <option value="รถตู้">รถตู้</option>
-                <option value="รถโฟล์คลิฟท์">รถโฟล์คลิฟท์</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ยี่ห้อ <span class="text-rose-500">*</span></label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">ชื่อเรียก / ภารกิจ</label>
               <input
                 type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
-                v-model="formData.brand"
-                placeholder="เช่น Isuzu, Toyota, Hino"
-                required
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">รุ่น</label>
-              <input
-                type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
-                v-model="formData.model"
-                placeholder="เช่น Forward 210, Hilux Revo"
-              />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อเรียก / หน้าที่รถ</label>
-              <input
-                type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.name"
-                placeholder="เช่น รถส่งข้าวเปลือก, รถตรวจงาน"
+                placeholder="เช่น รถส่งข้าวสารถุง, รถลากจูง"
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">สีรถ</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">ทะเบียนรถ <span class="text-rose-500">*</span></label>
               <input
                 type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
-                v-model="formData.color"
-                placeholder="เช่น ขาว, น้ำเงิน"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 2: ทะเบียนและตัวถัง -->
-        <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
-            2. ทะเบียนและเอกสารตัวถัง
-          </h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ทะเบียนรถ <span class="text-rose-500">*</span></label>
-              <input
-                type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs font-mono"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs font-mono"
                 v-model="formData.plateNumber"
-                placeholder="เช่น 70-1234 หรือ 2ฒข 4411"
+                placeholder="เช่น 1ฒม 9988 หรือ 70-1234"
                 required
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">จังหวัด <span class="text-rose-500">*</span></label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">จังหวัด <span class="text-rose-500">*</span></label>
               <input
                 type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.province"
                 placeholder="เช่น นครปฐม, กรุงเทพมหานคร"
                 required
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ปีรถ (ค.ศ. หรือ พ.ศ.)</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">ยี่ห้อ <span class="text-rose-500">*</span></label>
               <input
                 type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
-                v-model="formData.year"
-                placeholder="เช่น 2023"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                v-model="formData.brand"
+                placeholder="เช่น Isuzu, Hino, Toyota"
+                required
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">สถานะการใช้งาน</label>
-              <select class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs" v-model="formData.status">
-                <option value="active">ใช้งานอยู่</option>
-                <option value="inactive">ไม่ได้ใช้งาน / ซ่อมพัก</option>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">รุ่นรถ</label>
+              <input
+                type="text"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                v-model="formData.model"
+                placeholder="เช่น D-Max, Forward, Hilux"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">ประเภทรถ</label>
+              <select
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                v-model="formData.type"
+              >
+                <option value="รถกระบะตอนเดียว">รถกระบะตอนเดียว</option>
+                <option value="รถกระบะแค็บ">รถกระบะแค็บ</option>
+                <option value="รถกระบะ 4 ประตู">รถกระบะ 4 ประตู</option>
+                <option value="รถบรรทุก 4 ล้อ">รถบรรทุก 4 ล้อ</option>
+                <option value="รถบรรทุก 6 ล้อ">รถบรรทุก 6 ล้อ</option>
+                <option value="รถบรรทุก 10 ล้อ">รถบรรทุก 10 ล้อ</option>
+                <option value="รถโฟล์คลิฟท์">รถโฟล์คลิฟท์</option>
               </select>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">สถานะรถ</label>
+              <select
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                v-model="formData.status"
+              >
+                <option value="active">ใช้งานอยู่ (Active)</option>
+                <option value="inactive">ไม่ได้ใช้งาน (Inactive)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: เลขตัวรถ และ เลขเครื่อง -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-1">
+            2. เลขตัวถังและเครื่องยนต์
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">เลขตัวรถ / คัสซี (VIN)</label>
+              <input
+                type="text"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs font-mono"
+                v-model="formData.vin"
+                placeholder="เช่น MP1TFR85..."
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">เลขเครื่องยนต์</label>
+              <input
+                type="text"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs font-mono"
+                v-model="formData.engineNo"
+                placeholder="เช่น 4JJ1-xxxxxx"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">สีรถ</label>
+              <input
+                type="text"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                v-model="formData.color"
+                placeholder="เช่น ขาว, บรอนซ์เงิน"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">ปีจดทะเบียน</label>
+              <input
+                type="text"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs font-mono"
+                v-model="formData.year"
+                placeholder="เช่น 2022 หรือ 2565"
+              />
             </div>
           </div>
         </div>
 
         <!-- Section 3: หมายเหตุและผู้บันทึก -->
         <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
-            3. หมายเหตุและผู้บันทึก
+          <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-1">
+            3. บันทึกและผู้จัดทำ
           </h4>
-          <div class="space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">หมายเหตุ</label>
-              <textarea
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
-                rows="2"
-                v-model="formData.notes"
-                placeholder="ระบุข้อควรระวังหรือรายละเอียดพิเศษ..."
-              />
-            </div>
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <label class="block text-xs font-semibold text-slate-700">ผู้บันทึกข้อมูล <span class="text-rose-500">*</span></label>
-                <button 
-                  type="button" 
-                  class="text-[11px] text-blue-600 hover:text-blue-800 underline font-medium"
-                  @click="customCreatedByMode = !customCreatedByMode"
-                >
-                  {{ customCreatedByMode ? '← เลือกจากรายชื่อ' : '+ พิมพ์ระบุเอง' }}
-                </button>
-              </div>
-
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">หมายเหตุเพิ่มเติม</label>
+            <textarea
+              class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+              rows="2"
+              v-model="formData.notes"
+              placeholder="รายละเอียดเฉพาะ เช่น รถประจำสาขา 2, ใช้เฉพาะขนส่งในเขตเทศบาล"
+            ></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">ชื่อผู้บันทึก</label>
+            <div class="flex items-center gap-2">
               <select
                 v-if="!customCreatedByMode"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.createdBy"
-                required
               >
                 <option v-for="staff in getStaffFormattedList" :key="staff.id" :value="staff.label">
-                  {{ staff.label }}{{ staff.isDefault ? ' (ค่าเริ่มต้น)' : '' }}
+                  {{ staff.label }}
                 </option>
               </select>
-
               <input
                 v-else
                 type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.createdBy"
-                placeholder="ระบุชื่อและตำแหน่งผู้บันทึก..."
-                required
+                placeholder="พิมพ์ชื่อผู้บันทึก..."
               />
+              <button
+                type="button"
+                class="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap shadow-2xs"
+                @click="customCreatedByMode = !customCreatedByMode"
+              >
+                {{ customCreatedByMode ? 'เลือกรายชื่อ' : 'พิมพ์เอง' }}
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Modal Actions -->
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
-          <AppButton variant="secondary" @click="isModalOpen = false">
+        <!-- Buttons -->
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <AppButton variant="secondary" @click="isModalOpen = false" type="button">
             ยกเลิก
           </AppButton>
-          <AppButton type="submit" variant="primary" :loading="saving">
-            {{ saving ? 'กำลังบันทึก...' : 'บันทึกข้อมูลรถ' }}
+          <AppButton variant="primary" type="submit" :loading="saving">
+            {{ editingId ? 'บันทึกการแก้ไข' : 'เพิ่มรถใหม่' }}
           </AppButton>
         </div>
       </form>
@@ -742,88 +838,77 @@
     <Modal
       :isOpen="isBulkModalOpen"
       @close="isBulkModalOpen = false"
-      title="นำเข้าข้อมูลรถจาก Excel / หลายคันพร้อมกัน"
+      title="นำเข้าข้อมูลรถหลายคัน (Bulk Import)"
     >
       <div class="space-y-4">
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3.5 text-xs text-slate-700 space-y-1.5">
-          <div class="font-bold text-blue-900 flex items-center justify-between">
-            <span>💡 วิธีนำเข้าข้อมูลด่วนจาก Excel / ตาราง:</span>
+        <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-3.5 text-xs text-blue-900 space-y-1 shadow-2xs">
+          <div class="font-bold flex items-center gap-1.5">
+            <FileSpreadsheet :size="16" class="text-blue-600" />
+            <span>รูปแบบการวางข้อมูล (คั่นด้วย Tab จาก Excel หรือ เครื่องหมายจุลภาค ,)</span>
+          </div>
+          <p class="text-slate-600 leading-relaxed font-mono">
+            รหัสรถ, ทะเบียนรถ, จังหวัด, ยี่ห้อ, รุ่น, ประเภท, วันหมดประกัน, วันครบต่อทะเบียน, วันหมด พ.ร.บ.
+          </p>
+          <div class="pt-1">
             <button 
               type="button" 
-              class="text-blue-700 underline font-semibold hover:text-blue-900"
+              class="text-blue-700 hover:underline font-bold text-xs inline-flex items-center gap-1"
               @click="insertSampleBulkText"
             >
-              คลิกเพื่อใส่ตัวอย่างข้อมูล
+              <span>+ ใส่ข้อมูลตัวอย่าง (3 คัน)</span>
             </button>
-          </div>
-          <p>
-            คัดลอกตารางจาก <strong>Excel</strong> หรือพิมพ์ 1 บรรทัดต่อ 1 คัน โดยคั่นด้วยเครื่องหมายจุลภาค <code>,</code> หรือแท็บ (Tab):
-          </p>
-          <div class="font-mono bg-white p-2 rounded border border-blue-100 text-[11px] text-slate-800">
-            รหัสรถ, ทะเบียน, จังหวัด, ยี่ห้อ, รุ่น, ประเภทรถ, วันหมดประกัน, วันต่อภาษี, วันหมดพรบ
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">
-            วางข้อมูลรถที่นี่ (คัดลอกจาก Excel ได้เลย)
-          </label>
+          <label class="block text-sm font-bold text-slate-700 mb-1.5">วางข้อมูลรถจาก Excel / CSV ที่นี่:</label>
           <textarea
-            class="w-full h-36 px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+            class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+            rows="6"
             v-model="bulkText"
-            placeholder="CK-06, 70-5555, นครปฐม, Isuzu, Forward, รถบรรทุก 6 ล้อ, 2026-12-01, 2026-11-15, 2026-12-01&#10;CK-07, 72-1234, นครปฐม, Hino, 500, รถบรรทุก 10 ล้อ, 2026-10-10, 2026-10-15, 2026-10-10"
             @input="parseBulkText"
-          />
+            placeholder="CK-06, 70-5555, นครปฐม, Isuzu, Forward FRR 210, รถบรรทุก 6 ล้อ, 2026-12-01, 2026-11-15, 2026-12-01"
+          ></textarea>
         </div>
 
         <!-- Preview Table -->
         <div v-if="parsedBulkList.length > 0" class="space-y-2">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-800">
-              ตัวอย่างรายการที่จะนำเข้า ({{ parsedBulkList.length }} คัน):
-            </span>
-            <span class="text-xs text-emerald-600 font-semibold">✓ ตรวจสอบข้อมูลเรียบร้อย</span>
+            <span class="text-xs font-bold text-slate-700">ตรวจสอบข้อมูลตัวอย่างที่พร้อมนำเข้า ({{ parsedBulkList.length }} คัน):</span>
           </div>
-
-          <div class="max-h-48 overflow-y-auto border border-slate-200 rounded-lg">
+          <div class="border border-slate-200 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
             <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 sticky top-0">
+              <thead class="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold sticky top-0">
                 <tr>
                   <th class="p-2">รหัส</th>
                   <th class="p-2">ทะเบียน</th>
-                  <th class="p-2">จังหวัด</th>
                   <th class="p-2">ยี่ห้อ/รุ่น</th>
-                  <th class="p-2">ประกัน</th>
-                  <th class="p-2">ภาษี</th>
-                  <th class="p-2">พ.ร.บ.</th>
+                  <th class="p-2">ประเภท</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 text-slate-700">
-                <tr v-for="(item, idx) in parsedBulkList" :key="idx" class="hover:bg-slate-50">
+              <tbody class="divide-y divide-slate-100 text-slate-600 font-mono">
+                <tr v-for="(item, idx) in parsedBulkList" :key="idx">
                   <td class="p-2 font-bold text-blue-600">{{ item.code }}</td>
-                  <td class="p-2 font-bold font-mono">{{ item.plateNumber }}</td>
-                  <td class="p-2">{{ item.province }}</td>
+                  <td class="p-2">{{ item.plateNumber }} ({{ item.province }})</td>
                   <td class="p-2">{{ item.brand }} {{ item.model }}</td>
-                  <td class="p-2">{{ item.insuranceEndDate || '-' }}</td>
-                  <td class="p-2">{{ item.taxExpireDate || '-' }}</td>
-                  <td class="p-2">{{ item.prbEndDate || '-' }}</td>
+                  <td class="p-2">{{ item.type }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-200">
-          <AppButton variant="secondary" @click="isBulkModalOpen = false">
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <AppButton variant="secondary" @click="isBulkModalOpen = false" type="button">
             ยกเลิก
           </AppButton>
           <AppButton 
             variant="primary" 
-            :disabled="parsedBulkList.length === 0" 
+            @click="handleSaveBulk" 
             :loading="bulkSaving"
-            @click="handleSaveBulk"
+            :disabled="parsedBulkList.length === 0"
           >
-            {{ bulkSaving ? 'กำลังนำเข้า...' : `ยืนยันนำเข้าข้อมูล (${parsedBulkList.length} คัน)` }}
+            นำเข้า {{ parsedBulkList.length }} คัน
           </AppButton>
         </div>
       </div>
@@ -834,6 +919,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { 
+  Truck, 
   Search, 
   Plus, 
   Eye, 
@@ -848,7 +934,7 @@ import {
   Info, 
   FileCheck,
   FileSpreadsheet,
-  Truck
+  Sparkles
 } from 'lucide-vue-next';
 import { api } from '../api';
 import StatusBadge from '../components/StatusBadge.vue';
@@ -864,7 +950,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['selectVehicle', 'clearSelectedVehicle']);
+const emit = defineEmits(['selectVehicle', 'clearSelectedVehicle', 'renewDocument']);
 const { isAdmin } = useAuth();
 const { getStaffFormattedList, defaultStaffLabel, loadStaff } = useStaff();
 
@@ -966,6 +1052,7 @@ const handleSaveBulk = async () => {
     bulkSaving.value = false;
   }
 };
+
 const formData = ref({
   code: '',
   name: '',
@@ -1009,6 +1096,14 @@ const loadVehicleDetail = async (id) => {
   } finally {
     detailLoading.value = false;
   }
+};
+
+const handleQuickRenew = (item, type) => {
+  emit('renewDocument', {
+    type,
+    vehicleId: detailVehicle.value?.id || item.vehicleId,
+    rawDoc: item
+  });
 };
 
 watch(() => props.selectedVehicleId, (newId) => {

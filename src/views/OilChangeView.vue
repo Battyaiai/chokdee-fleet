@@ -61,24 +61,23 @@
     <!-- Table -->
     <div class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm border-collapse min-w-[850px]">
-          <thead class="bg-slate-50 text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-slate-50 text-base font-bold text-slate-800 border-b border-slate-200">
             <tr>
-              <th class="px-5 py-3">วันที่</th>
-              <th class="px-5 py-3">รถ / รหัส</th>
-              <th class="px-5 py-3">ทะเบียน</th>
-              <th class="px-5 py-3 text-right">เลขไมล์ ณ วันที่เปลี่ยน</th>
-              <th class="px-5 py-3">รายการน้ำมัน / รายละเอียด</th>
-              <th class="px-5 py-3 text-right">ค่าใช้จ่าย (บาท)</th>
-              <th class="px-5 py-3">นัดครั้งต่อไป</th>
-              <th class="px-5 py-3 text-right">เลขไมล์เป้าหมาย</th>
-              <th class="px-5 py-3">ผู้บันทึก</th>
-              <th v-if="isAdmin" class="px-5 py-3 text-center">จัดการ</th>
+              <th class="px-5 py-4 whitespace-nowrap">วันที่</th>
+              <th class="px-5 py-4 min-w-[200px]">รถ / รหัส</th>
+              <th class="px-5 py-4 whitespace-nowrap">ทะเบียน</th>
+              <th class="px-5 py-4 text-right whitespace-nowrap">เลขไมล์ ณ วันที่เปลี่ยน</th>
+              <th class="px-5 py-4 min-w-[260px]">รายการน้ำมัน / รายละเอียด</th>
+              <th class="px-5 py-4 text-right whitespace-nowrap">ค่าใช้จ่าย (บาท)</th>
+              <th class="px-5 py-4 whitespace-nowrap">นัดครั้งต่อไป</th>
+              <th class="px-5 py-4 text-right whitespace-nowrap">เลขไมล์เป้าหมาย</th>
+              <th v-if="isAdmin" class="px-5 py-4 text-center whitespace-nowrap w-24">จัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 text-slate-700">
             <tr v-if="filteredRecords.length === 0">
-              <td colspan="10" class="text-center py-10 text-slate-400">
+              <td :colspan="isAdmin ? 9 : 8" class="text-center py-12 text-slate-400 text-base">
                 ไม่พบประวัติการเปลี่ยนถ่ายน้ำมันเครื่อง
               </td>
             </tr>
@@ -88,45 +87,74 @@
               :key="rec.id"
               class="hover:bg-slate-50/80 transition-colors"
             >
-              <td class="px-5 py-3.5 whitespace-nowrap">
-                <div class="flex items-center gap-1.5 font-medium text-slate-800">
-                  <Calendar :size="14" class="text-slate-400 shrink-0" />
+              <td class="px-5 py-4.5 whitespace-nowrap align-top">
+                <div class="flex items-center gap-2 font-bold text-slate-900 text-lg">
+                  <Calendar :size="18" class="text-blue-500 shrink-0" />
                   <span>{{ rec.changeDate || '-' }}</span>
                 </div>
               </td>
-              <td class="px-5 py-3.5 whitespace-nowrap">
-                <div class="font-bold text-blue-600">{{ rec.vehicle?.code || '-' }}</div>
-                <div class="text-xs text-slate-400">{{ rec.vehicle?.brand }} {{ rec.vehicle?.model }}</div>
+              <td class="px-5 py-4.5 align-top max-w-[240px]">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-extrabold text-blue-600 text-lg">{{ rec.vehicle?.code || '-' }}</span>
+                  <span v-if="rec.vehicle?.name" class="font-bold text-blue-900 text-base bg-blue-100/90 px-2.5 py-0.5 rounded-lg border border-blue-200 shadow-2xs">
+                    {{ rec.vehicle.name }}
+                  </span>
+                </div>
+                <div class="text-base font-bold text-slate-800 mt-1 leading-snug break-words">
+                  {{ rec.vehicle?.brand }} {{ rec.vehicle?.model }}
+                </div>
+                <div v-if="rec.vehicle?.engineNo || rec.vehicle?.vin" class="text-xs text-slate-600 font-mono mt-1.5 space-y-0.5 leading-tight">
+                  <div v-if="rec.vehicle?.engineNo" class="break-words" :title="'เลขเครื่อง: ' + rec.vehicle.engineNo">
+                    <span class="text-slate-400 font-sans font-medium">เครื่อง:</span> <span class="font-bold text-slate-800">{{ rec.vehicle.engineNo }}</span>
+                  </div>
+                  <div v-if="rec.vehicle?.vin" class="break-words" :title="'เลขตัวรถ: ' + rec.vehicle.vin">
+                    <span class="text-slate-400 font-sans font-medium">คัสซี:</span> <span class="font-bold text-slate-800">{{ rec.vehicle.vin }}</span>
+                  </div>
+                </div>
               </td>
-              <td class="px-5 py-3.5 whitespace-nowrap">
-                <span class="inline-block px-2 py-0.5 rounded font-mono font-bold text-xs bg-slate-100 text-slate-800 border border-slate-200">
-                  {{ rec.vehicle?.plateNumber }} {{ rec.vehicle?.province }}
-                </span>
+              <td class="px-5 py-4.5 whitespace-nowrap align-top">
+                <div class="inline-block font-mono font-black text-lg bg-slate-100 text-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-300 shadow-2xs leading-tight">
+                  {{ rec.vehicle?.plateNumber }}
+                </div>
+                <div class="text-sm font-bold text-slate-500 mt-1">
+                  {{ rec.vehicle?.province }}
+                </div>
               </td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-right font-bold text-slate-900">
-                {{ (rec.currentMileage || 0).toLocaleString() }} กม.
+              <td class="px-5 py-4.5 whitespace-nowrap text-right align-top">
+                <div class="text-lg font-black text-slate-900">
+                  {{ (rec.currentMileage || 0).toLocaleString() }} กม.
+                </div>
               </td>
-              <td class="px-5 py-3.5">
-                <div class="font-medium text-slate-900">{{ rec.oilDetails || '-' }}</div>
-                <div v-if="rec.notes" class="text-xs text-slate-400 mt-0.5">หมายเหตุ: {{ rec.notes }}</div>
+              <td class="px-5 py-4.5 align-top max-w-[320px]">
+                <div class="font-bold text-slate-950 text-lg leading-snug break-words">
+                  {{ rec.oilDetails || '-' }}
+                </div>
+                <div v-if="rec.notes" class="text-sm text-slate-700 mt-2 leading-relaxed break-words bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <span class="font-bold text-slate-800">หมายเหตุ:</span> {{ rec.notes }}
+                </div>
               </td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-right font-bold text-slate-900">
-                ฿{{ (rec.cost || 0).toLocaleString() }}
+              <td class="px-5 py-4.5 whitespace-nowrap text-right align-top">
+                <div class="text-xl font-black text-blue-700">
+                  ฿{{ (rec.cost || 0).toLocaleString() }}
+                </div>
               </td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-slate-700">
-                {{ rec.nextChangeDate || '-' }}
+              <td class="px-5 py-4.5 whitespace-nowrap align-top">
+                <div class="text-base font-bold text-slate-800">
+                  {{ rec.nextChangeDate || '-' }}
+                </div>
               </td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-right text-slate-700">
-                {{ rec.nextMileage ? `${rec.nextMileage.toLocaleString()} กม.` : '-' }}
+              <td class="px-5 py-4.5 whitespace-nowrap text-right align-top">
+                <div class="text-lg font-bold text-amber-700">
+                  {{ rec.nextMileage ? `${rec.nextMileage.toLocaleString()} กม.` : '-' }}
+                </div>
               </td>
-              <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500">{{ rec.createdBy || '-' }}</td>
-              <td v-if="isAdmin" class="px-5 py-3.5 whitespace-nowrap text-center">
-                <div class="inline-flex items-center gap-1.5">
-                  <button class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" @click="handleOpenEdit(rec)" title="แก้ไข" type="button">
-                    <Edit2 :size="15" />
+              <td v-if="isAdmin" class="px-5 py-4.5 whitespace-nowrap text-center align-top">
+                <div class="inline-flex items-center gap-2 pt-0.5">
+                  <button class="p-2.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors border border-slate-200 hover:border-blue-300" @click="handleOpenEdit(rec)" title="แก้ไข" type="button">
+                    <Edit2 :size="18" />
                   </button>
-                  <button class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors" @click="handleDelete(rec.id)" title="ลบ" type="button">
-                    <Trash2 :size="15" />
+                  <button class="p-2.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors border border-slate-200 hover:border-rose-300" @click="handleDelete(rec.id)" title="ลบ" type="button">
+                    <Trash2 :size="18" />
                   </button>
                 </div>
               </td>
@@ -145,37 +173,55 @@
       <form @submit.prevent="handleSave" class="space-y-5">
         <!-- Section 1 -->
         <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
+          <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-1">
             1. ข้อมูลรถและวันที่เปลี่ยน
           </h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div class="sm:col-span-2">
-              <label class="block text-xs font-semibold text-slate-700 mb-1">เลือกรถ <span class="text-rose-500">*</span></label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">เลือกรถ <span class="text-rose-500">*</span></label>
               <select
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.vehicleId"
                 required
               >
                 <option value="">-- กรุณาเลือกรถ --</option>
                 <option v-for="v in vehicles" :key="v.id" :value="v.id">
-                  {{ v.code }} - ทะเบียน {{ v.plateNumber }} {{ v.province }} ({{ v.brand }} {{ v.model }})
+                  {{ v.code }} - {{ v.name ? `[${v.name}] ` : '' }}ทะเบียน {{ v.plateNumber }} {{ v.province }} ({{ v.brand }} {{ v.model }})
                 </option>
               </select>
             </div>
+
+            <!-- Selected Vehicle Info Summary Box -->
+            <div v-if="selectedVehicleInfo" class="sm:col-span-2 bg-blue-50/70 border border-blue-200 rounded-xl p-3.5 text-sm space-y-2 shadow-2xs">
+              <div class="font-bold text-blue-900 flex items-center justify-between text-base">
+                <span>{{ selectedVehicleInfo.code }} - {{ selectedVehicleInfo.brand }} {{ selectedVehicleInfo.model }} {{ selectedVehicleInfo.name ? `(${selectedVehicleInfo.name})` : '' }}</span>
+                <span class="font-mono bg-white px-2.5 py-1 rounded-lg border border-blue-200 font-black text-slate-900">{{ selectedVehicleInfo.plateNumber }} {{ selectedVehicleInfo.province }}</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 font-mono text-xs">
+                <div class="bg-white/90 p-2.5 rounded-lg border border-blue-100">
+                  <span class="text-slate-500 font-sans text-xs font-semibold block">⚙️ เลขเครื่องยนต์:</span>
+                  <strong class="text-slate-900 font-bold select-all text-sm">{{ selectedVehicleInfo.engineNo || 'ยังไม่ระบุ' }}</strong>
+                </div>
+                <div class="bg-white/90 p-2.5 rounded-lg border border-blue-100">
+                  <span class="text-slate-500 font-sans text-xs font-semibold block">🚗 เลขตัวรถ / คัสซี (VIN):</span>
+                  <strong class="text-blue-950 font-bold select-all text-sm">{{ selectedVehicleInfo.vin || 'ยังไม่ระบุ' }}</strong>
+                </div>
+              </div>
+            </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">วันที่เปลี่ยนถ่าย <span class="text-rose-500">*</span></label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">วันที่เปลี่ยนน้ำมันเครื่อง <span class="text-rose-500">*</span></label>
               <input
                 type="date"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.changeDate"
                 required
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">เลขไมล์ ณ วันที่เปลี่ยน (กม.)</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">เลขไมล์ ณ วันที่เปลี่ยน (กม.)</label>
               <input
                 type="number"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.currentMileage"
                 placeholder="เช่น 145000"
               />
@@ -185,94 +231,53 @@
 
         <!-- Section 2 -->
         <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
-            2. รายละเอียดและค่าใช้จ่าย
+          <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-1">
+            2. รายละเอียดน้ำมันเครื่องและนัดหมายถัดไป
           </h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div class="sm:col-span-2">
-              <label class="block text-xs font-semibold text-slate-700 mb-1">รายการน้ำมัน / รายละเอียด <span class="text-rose-500">*</span></label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">รายการน้ำมัน / เกรด / รายละเอียด <span class="text-rose-500">*</span></label>
               <input
                 type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.oilDetails"
                 placeholder="เช่น น้ำมันเครื่องดีเซล 15W-40 + กรองน้ำมันเครื่องแท้"
                 required
               />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ค่าใช้จ่ายรวม (บาท)</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">ค่าใช้จ่าย (บาท)</label>
               <input
                 type="number"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.cost"
-                placeholder="เช่น 3500"
+                placeholder="เช่น 3200"
               />
             </div>
-          </div>
-        </div>
-
-        <!-- Section 3 -->
-        <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1">
-            3. นัดหมายครั้งต่อไป
-          </h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">นัดเปลี่ยนครั้งต่อไป (วันที่)</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">วันครบกำหนดครั้งต่อไป</label>
               <input
                 type="date"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.nextChangeDate"
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">เลขไมล์ครั้งต่อไป (กม.)</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">เลขไมล์ครั้งต่อไป (กม.)</label>
               <input
                 type="number"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 v-model="formData.nextMileage"
                 placeholder="เช่น 155000"
               />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-xs font-semibold text-slate-700 mb-1">หมายเหตุเพิ่มเติม</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">หมายเหตุเพิ่มเติม</label>
               <textarea
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
                 rows="2"
                 v-model="formData.notes"
                 placeholder="เช่น เช็กระดับน้ำมันเกียร์และเฟืองท้ายแล้วปกติ..."
-              />
-            </div>
-            <div class="sm:col-span-2">
-              <div class="flex items-center justify-between mb-1">
-                <label class="block text-xs font-semibold text-slate-700">ชื่อช่าง / ผู้บันทึก <span class="text-rose-500">*</span></label>
-                <button 
-                  type="button" 
-                  class="text-[11px] text-blue-600 hover:text-blue-800 underline font-medium"
-                  @click="customCreatedByMode = !customCreatedByMode"
-                >
-                  {{ customCreatedByMode ? '← เลือกจากรายชื่อ' : '+ พิมพ์ระบุเอง' }}
-                </button>
-              </div>
-
-              <select
-                v-if="!customCreatedByMode"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
-                v-model="formData.createdBy"
-                required
-              >
-                <option v-for="staff in getStaffFormattedList" :key="staff.id" :value="staff.label">
-                  {{ staff.label }}{{ staff.isDefault ? ' (ค่าเริ่มต้น)' : '' }}
-                </option>
-              </select>
-
-              <input
-                v-else
-                type="text"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs"
-                v-model="formData.createdBy"
-                placeholder="ระบุชื่อช่างหรือผู้บันทึก..."
-                required
               />
             </div>
           </div>
@@ -428,21 +433,36 @@ const handleDelete = async (id) => {
   }
 };
 
+const selectedVehicleInfo = computed(() => {
+  if (!formData.value.vehicleId) return null;
+  return vehicles.value.find(v => v.id === formData.value.vehicleId) || null;
+});
+
 const filteredRecords = computed(() => {
-  return records.value.filter(rec => {
+  return [...records.value].filter(rec => {
     const veh = rec.vehicle;
     const plate = veh ? `${veh.plateNumber} ${veh.province}` : '';
     const brandModel = veh ? `${veh.brand} ${veh.model}` : '';
+    const name = veh?.name || '';
+    const vin = veh?.vin || '';
+    const engineNo = veh?.engineNo || '';
     const details = rec.oilDetails || '';
 
     const q = searchTerm.value.toLowerCase();
     const matchSearch = 
       plate.toLowerCase().includes(q) ||
       brandModel.toLowerCase().includes(q) ||
+      name.toLowerCase().includes(q) ||
+      vin.toLowerCase().includes(q) ||
+      engineNo.toLowerCase().includes(q) ||
       details.toLowerCase().includes(q);
 
     const matchVeh = vehicleFilter.value === 'all' || rec.vehicleId === vehicleFilter.value;
     return matchSearch && matchVeh;
+  }).sort((a, b) => {
+    const codeA = a.vehicle?.code || '';
+    const codeB = b.vehicle?.code || '';
+    return codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: 'base' });
   });
 });
 

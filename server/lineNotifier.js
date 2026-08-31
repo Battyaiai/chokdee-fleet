@@ -138,11 +138,14 @@ export async function runFleetAlertScanner(forceAll = false) {
   for (const vehicle of vehicles) {
     const plateStr = `${vehicle.plateNumber} ${vehicle.province}`;
 
-    // 1. Check Insurance
+    // 1. Check Latest Insurance
     if (settings.notifyInsurance) {
-      const insList = insuranceDocs.filter(d => d.vehicleId === vehicle.id);
-      for (const ins of insList) {
-        if (!ins.endDate) continue;
+      const insList = insuranceDocs
+        .filter(d => d.vehicleId === vehicle.id && d.endDate)
+        .sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+      const ins = insList[0];
+
+      if (ins) {
         const days = getDaysDiff(ins.endDate);
         const stage = getAlertStage(days);
 
@@ -154,6 +157,8 @@ export async function runFleetAlertScanner(forceAll = false) {
             let msg = `🚗 แจ้งเตือนประกันรถ - โชคดีค้าข้าว\n`;
             msg += `รถ: ${vehicle.brand} ${vehicle.model} (${vehicle.name})\n`;
             msg += `ทะเบียน: ${plateStr}\n`;
+            if (vehicle.vin) msg += `เลขตัวรถ: ${vehicle.vin}\n`;
+            if (vehicle.engineNo) msg += `เลขเครื่อง: ${vehicle.engineNo}\n`;
             msg += `บริษัท: ${ins.company || '-'}\n`;
             msg += `ประกันจะหมดอายุวันที่: ${formatThaiDate(ins.endDate)}\n`;
             if (days < 0) {
@@ -184,11 +189,14 @@ export async function runFleetAlertScanner(forceAll = false) {
       }
     }
 
-    // 2. Check Tax (ทะเบียน)
+    // 2. Check Latest Tax (ทะเบียน)
     if (settings.notifyTax) {
-      const taxList = taxDocs.filter(d => d.vehicleId === vehicle.id);
-      for (const tax of taxList) {
-        if (!tax.expireDate) continue;
+      const taxList = taxDocs
+        .filter(d => d.vehicleId === vehicle.id && d.expireDate)
+        .sort((a, b) => new Date(b.expireDate) - new Date(a.expireDate));
+      const tax = taxList[0];
+
+      if (tax) {
         const days = getDaysDiff(tax.expireDate);
         const stage = getAlertStage(days);
 
@@ -200,6 +208,8 @@ export async function runFleetAlertScanner(forceAll = false) {
             let msg = `🚗 แจ้งเตือนต่อทะเบียน - โชคดีค้าข้าว\n`;
             msg += `รถ: ${vehicle.brand} ${vehicle.model} (${vehicle.name})\n`;
             msg += `ทะเบียน: ${plateStr}\n`;
+            if (vehicle.vin) msg += `เลขตัวรถ: ${vehicle.vin}\n`;
+            if (vehicle.engineNo) msg += `เลขเครื่อง: ${vehicle.engineNo}\n`;
             msg += `ทะเบียนครบกำหนดวันที่: ${formatThaiDate(tax.expireDate)}\n`;
             if (days < 0) {
               msg += `สถานะ: 🔴 เกินกำหนดแล้ว (${Math.abs(days)} วันที่แล้ว)\n`;
@@ -229,11 +239,14 @@ export async function runFleetAlertScanner(forceAll = false) {
       }
     }
 
-    // 3. Check PRB (พ.ร.บ.)
+    // 3. Check Latest PRB (พ.ร.บ.)
     if (settings.notifyPrb) {
-      const prbList = prbDocs.filter(d => d.vehicleId === vehicle.id);
-      for (const prb of prbList) {
-        if (!prb.endDate) continue;
+      const prbList = prbDocs
+        .filter(d => d.vehicleId === vehicle.id && d.endDate)
+        .sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+      const prb = prbList[0];
+
+      if (prb) {
         const days = getDaysDiff(prb.endDate);
         const stage = getAlertStage(days);
 
@@ -245,6 +258,8 @@ export async function runFleetAlertScanner(forceAll = false) {
             let msg = `📋 แจ้งเตือน พ.ร.บ. - โชคดีค้าข้าว\n`;
             msg += `รถ: ${vehicle.brand} ${vehicle.model} (${vehicle.name})\n`;
             msg += `ทะเบียน: ${plateStr}\n`;
+            if (vehicle.vin) msg += `เลขตัวรถ: ${vehicle.vin}\n`;
+            if (vehicle.engineNo) msg += `เลขเครื่อง: ${vehicle.engineNo}\n`;
             msg += `เลข พ.ร.บ.: ${prb.prbNumber || '-'}\n`;
             msg += `พ.ร.บ. จะหมดอายุวันที่: ${formatThaiDate(prb.endDate)}\n`;
             if (days < 0) {
@@ -275,11 +290,14 @@ export async function runFleetAlertScanner(forceAll = false) {
       }
     }
 
-    // 4. Check Oil Change Schedule
+    // 4. Check Latest Oil Change Schedule
     if (settings.notifyOil) {
-      const oilList = oilChanges.filter(d => d.vehicleId === vehicle.id);
-      for (const oil of oilList) {
-        if (!oil.nextChangeDate) continue;
+      const oilList = oilChanges
+        .filter(d => d.vehicleId === vehicle.id && d.changeDate)
+        .sort((a, b) => new Date(b.changeDate) - new Date(a.changeDate));
+      const oil = oilList[0];
+
+      if (oil && oil.nextChangeDate) {
         const days = getDaysDiff(oil.nextChangeDate);
         if (days !== null && days <= 14) {
           const stage = getAlertStage(days);
@@ -306,6 +324,8 @@ export async function runFleetAlertScanner(forceAll = false) {
             });
             sentCount++;
             results.push({ type: 'oil', vehicle: plateStr, status });
+          } else {
+            skippedCount++;
           }
         }
       }

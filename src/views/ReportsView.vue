@@ -68,7 +68,7 @@
             v-model="selectedVehicleId"
           >
             <option value="all">รถทุกคันในร้าน</option>
-            <option v-for="v in vehicles" :key="v.id" :value="v.id">
+            <option v-for="v in sortedVehicles" :key="v.id" :value="v.id">
               {{ v.code }} - {{ v.plateNumber }} ({{ v.brand }})
             </option>
           </select>
@@ -104,7 +104,7 @@
       <div class="border-b-2 border-slate-900 pb-3 mb-3 flex items-start justify-between">
         <div>
           <h2 class="text-xl font-bold text-slate-950 tracking-tight" style="color: #0f172a; font-size: 18px; font-weight: 700;">
-            ร้านโชคดีค้าข้าว (CHOKDEE RICE TRADING)
+            โชคดีค้าข้าว (CHOKDEE RICE TRADING)
           </h2>
           <p class="text-xs text-slate-600 mt-1" style="color: #475569; font-size: 12px;">
             รายงานระบบจัดการข้อมูลรถยนต์และยานพาหนะ | ออกเมื่อ: {{ printDate }}
@@ -122,49 +122,57 @@
       <div v-if="reportType === 'fleet'" class="space-y-3">
         <div class="flex items-center justify-between pb-1">
           <h3 class="text-sm sm:text-base font-bold" style="color: #0f172a; font-size: 14px; font-weight: 700;">
-            1. รายงานข้อมูลรถทั้งหมด ร้านโชคดีค้าข้าว (จำนวน {{ activeVehicles.length }} คัน)
+            1. รายงานข้อมูลรถทั้งหมด โชคดีค้าข้าว (จำนวน {{ activeVehicles.length }} คัน)
           </h3>
         </div>
         <div class="overflow-x-auto">
           <table 
             class="w-full text-left text-xs border-collapse" 
-            style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #94a3b8;"
+            style="width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #94a3b8; page-break-inside: auto; break-inside: auto;"
           >
-            <thead>
-              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8;">
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 65px;">รหัส</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน / จังหวัด</th>
+            <thead style="display: table-header-group; page-break-inside: avoid; break-inside: avoid;">
+              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8; page-break-inside: avoid; break-inside: avoid;">
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 60px;">รหัส</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 105px;">ทะเบียน / จังหวัด</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ชื่อรถ / ประเภท</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">ยี่ห้อ - รุ่น</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">ประเภทรถ</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 60px;">ปี</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 90px;">สถานะ</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 130px;">ผู้บันทึก</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 115px;">เลขตัวรถ (VIN)</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">เลขเครื่องยนต์</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 50px;">ปี</th>
+                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 80px;">สถานะ</th>
+                
               </tr>
             </thead>
-            <tbody>
+            <tbody style="page-break-inside: auto; break-inside: auto;">
               <tr 
                 v-for="(v, idx) in activeVehicles" 
                 :key="v.id" 
-                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
+                class="avoid-break"
+                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc', pageBreakInside: 'avoid', breakInside: 'avoid', breakInsidePage: 'avoid' }"
               >
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb;">{{ v.code }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">
                   <div style="font-weight: 700; color: #0f172a; font-family: monospace;">{{ v.plateNumber }}</div>
-                  <div style="font-size: 10px; color: #64748b;">{{ v.province }}</div>
+                  <div style="font-size: 12px; color: #64748b;">{{ v.province }}</div>
+                </td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">
+                  <div style="font-weight: 700; color: #0f172a;">{{ v.name || '-' }}</div>
+                  <div style="font-size: 12.5px; color: #2563eb; font-weight: 500;">{{ v.type }}</div>
                 </td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 600; color: #1e293b;">{{ v.brand }} {{ v.model }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #334155;">{{ v.type }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 12.5px; color: #0f172a;">{{ v.vin || '-' }}</td>
+                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 12.5px; color: #0f172a;">{{ v.engineNo || '-' }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; color: #475569;">{{ v.year || '-' }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle;">
                   <span 
                     :style="v.status === 'active' 
-                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;' 
-                      : 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; border-radius: 9999px; font-size: 10.5px; white-space: nowrap;'"
+                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; border-radius: 9999px; font-weight: 600; font-size: 12.5px; white-space: nowrap;' 
+                      : 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; border-radius: 9999px; font-size: 12.5px; white-space: nowrap;'"
                   >
                     {{ v.status === 'active' ? 'ใช้งานอยู่' : 'ซ่อม/พัก' }}
                   </span>
                 </td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px; vertical-align: middle;">{{ v.createdBy || '-' }}</td>
+                
               </tr>
             </tbody>
           </table>
@@ -183,10 +191,10 @@
         <div class="overflow-x-auto">
           <table 
             class="w-full text-left text-xs border-collapse" 
-            style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #94a3b8;"
+            style="width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #94a3b8; page-break-inside: auto; break-inside: auto;"
           >
-            <thead>
-              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8;">
+            <thead style="display: table-header-group; page-break-inside: avoid; break-inside: avoid;">
+              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8; page-break-inside: avoid; break-inside: avoid;">
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 65px;">รหัส</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 100px;">ประเภทเอกสาร</th>
@@ -194,14 +202,15 @@
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 95px;">วันหมดอายุ</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 85px;">ค่าใช้จ่าย</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: center; width: 110px;">สถานะ</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ผู้บันทึก</th>
+                
               </tr>
             </thead>
-            <tbody>
+            <tbody style="page-break-inside: auto; break-inside: auto;">
               <tr 
                 v-for="(doc, idx) in activeDocs" 
                 :key="idx" 
-                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
+                class="avoid-break"
+                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc', pageBreakInside: 'avoid', breakInside: 'avoid', breakInsidePage: 'avoid' }"
               >
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb; vertical-align: middle;">{{ doc.vehicle?.code || '-' }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; font-family: monospace; vertical-align: middle;">{{ doc.vehicle?.plateNumber }} {{ doc.vehicle?.province }}</td>
@@ -212,17 +221,17 @@
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle;">
                   <span 
                     :style="doc.daysRemaining < 0 
-                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;'
+                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; border-radius: 9999px; font-weight: 600; font-size: 12.5px; white-space: nowrap;'
                       : doc.daysRemaining <= 30 
-                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;'
+                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 9999px; font-weight: 600; font-size: 12.5px; white-space: nowrap;'
                       : doc.daysRemaining <= 60 
-                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;'
-                      : 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; border-radius: 9999px; font-weight: 600; font-size: 10.5px; white-space: nowrap;'"
+                      ? 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 9999px; font-weight: 600; font-size: 12.5px; white-space: nowrap;'
+                      : 'display: inline-block; padding: 3px 10px; line-height: 1.4; background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; border-radius: 9999px; font-weight: 600; font-size: 12.5px; white-space: nowrap;'"
                   >
                     {{ doc.daysRemaining < 0 ? `เลยกำหนด ${Math.abs(doc.daysRemaining)} วัน` : `เหลือ ${doc.daysRemaining} วัน` }}
                   </span>
                 </td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px; vertical-align: middle;">{{ doc.createdBy || '-' }}</td>
+                
               </tr>
             </tbody>
           </table>
@@ -244,10 +253,10 @@
         <div class="overflow-x-auto">
           <table 
             class="w-full text-left text-xs border-collapse" 
-            style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #94a3b8;"
+            style="width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #94a3b8; page-break-inside: auto; break-inside: auto;"
           >
-            <thead>
-              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8;">
+            <thead style="display: table-header-group; page-break-inside: avoid; break-inside: avoid;">
+              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8; page-break-inside: avoid; break-inside: avoid;">
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 85px;">วันที่</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 65px;">รหัส</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน</th>
@@ -255,18 +264,19 @@
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">รายการน้ำมัน / รายละเอียด</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 85px;">ค่าใช้จ่าย</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 85px;">นัดถัดไป</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ผู้บันทึก</th>
+                
               </tr>
             </thead>
-            <tbody>
-              <tr v-if="activeOil.length === 0">
+            <tbody style="page-break-inside: auto; break-inside: auto;">
+              <tr v-if="activeOil.length === 0" class="avoid-break">
                 <td colspan="8" style="padding: 20px; text-align: center; color: #94a3b8;">ไม่พบประวัติน้ำมันเครื่องในช่วงวันที่นี้</td>
               </tr>
               <tr 
                 v-else 
                 v-for="(rec, idx) in activeOil" 
                 :key="rec.id" 
-                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
+                class="avoid-break"
+                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc', pageBreakInside: 'avoid', breakInside: 'avoid', breakInsidePage: 'avoid' }"
               >
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 500;">{{ rec.changeDate }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb;">{{ rec.vehicle?.code }}</td>
@@ -275,7 +285,7 @@
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #1e293b;">{{ rec.oilDetails }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700; color: #0f172a;">฿{{ (rec.cost || 0).toLocaleString() }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #475569;">{{ rec.nextChangeDate || '-' }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px;">{{ rec.createdBy || '-' }}</td>
+                
               </tr>
             </tbody>
           </table>
@@ -297,10 +307,10 @@
         <div class="overflow-x-auto">
           <table 
             class="w-full text-left text-xs border-collapse" 
-            style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #94a3b8;"
+            style="width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #94a3b8; page-break-inside: auto; break-inside: auto;"
           >
-            <thead>
-              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8;">
+            <thead style="display: table-header-group; page-break-inside: avoid; break-inside: avoid;">
+              <tr style="background-color: #f1f5f9; border-bottom: 2px solid #94a3b8; page-break-inside: avoid; break-inside: avoid;">
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 85px;">วันที่ซ่อม</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 65px;">รหัส</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ทะเบียน</th>
@@ -308,18 +318,19 @@
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b;">รายละเอียดการซ่อม</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 120px;">อู่ / ร้านซ่อม</th>
                 <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; text-align: right; width: 85px;">ค่าใช้จ่าย</th>
-                <th style="padding: 7px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; width: 110px;">ผู้บันทึก</th>
+                
               </tr>
             </thead>
-            <tbody>
-              <tr v-if="activeMnt.length === 0">
+            <tbody style="page-break-inside: auto; break-inside: auto;">
+              <tr v-if="activeMnt.length === 0" class="avoid-break">
                 <td colspan="8" style="padding: 20px; text-align: center; color: #94a3b8;">ไม่พบประวัติซ่อมบำรุงในช่วงวันที่นี้</td>
               </tr>
               <tr 
                 v-else 
                 v-for="(rec, idx) in activeMnt" 
                 :key="rec.id" 
-                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }"
+                class="avoid-break"
+                :style="{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc', pageBreakInside: 'avoid', breakInside: 'avoid', breakInsidePage: 'avoid' }"
               >
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 500;">{{ rec.repairDate }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 700; color: #2563eb;">{{ rec.vehicle?.code }}</td>
@@ -328,7 +339,7 @@
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: 600; color: #0f172a;">{{ rec.description }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #475569;">{{ rec.garage || '-' }}</td>
                 <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700; color: #e11d48;">฿{{ (rec.cost || 0).toLocaleString() }}</td>
-                <td style="padding: 6px 8px; border: 1px solid #cbd5e1; color: #64748b; font-size: 10.5px;">{{ rec.createdBy || '-' }}</td>
+                
               </tr>
             </tbody>
           </table>
@@ -462,11 +473,16 @@ const handleOpenPrintWindow = () => {
       <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
       <style>
         @page { size: A4 portrait; margin: 8mm; }
-        body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 12px; color: #0f172a; background: #fff; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-        th { background-color: #f1f5f9; border: 1px solid #94a3b8; padding: 6px 8px; font-weight: bold; text-align: left; color: #1e293b; }
-        td { border: 1px solid #cbd5e1; padding: 5px 8px; vertical-align: middle; }
-        tr:nth-child(even) { background-color: #f8fafc; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 10px; color: #0f172a; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; page-break-inside: auto; break-inside: auto; }
+        thead { display: table-header-group !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+        tfoot { display: table-footer-group !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+        tbody { page-break-inside: auto; break-inside: auto; }
+        tr { page-break-inside: avoid !important; break-inside: avoid !important; break-inside: avoid-page !important; page-break-after: auto; }
+        th { background-color: #f1f5f9 !important; border: 1px solid #94a3b8; padding: 6px 8px; font-weight: bold; text-align: left; color: #1e293b; page-break-inside: avoid !important; break-inside: avoid !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        td { border: 1px solid #cbd5e1; padding: 5px 8px; vertical-align: middle; page-break-inside: avoid !important; break-inside: avoid !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        tr:nth-child(even) td { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .no-print { display: block; margin-bottom: 12px; }
         @media print { .no-print { display: none !important; } }
       </style>
@@ -499,7 +515,7 @@ const handleDownloadPDF = async () => {
     generatingPdf.value = true;
 
     const opt = {
-      margin: [6, 6, 6, 6],
+      margin: [8, 8, 8, 8],
       filename: `โชคดีค้าข้าว_รายงาน_${reportType.value}_${new Date().toISOString().split('T')[0]}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
@@ -509,7 +525,13 @@ const handleDownloadPDF = async () => {
         logging: false,
         scrollY: 0
       },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { 
+        mode: ['avoid-all', 'css', 'legacy'],
+        before: '.page-break-before',
+        after: '.page-break-after',
+        avoid: ['tr', 'thead', 'tfoot', 'tbody tr', 'table', '.avoid-break']
+      }
     };
 
     await html2pdf().set(opt).from(element).save();
@@ -527,9 +549,9 @@ const handleExportCSV = () => {
   let filename = `รายงาน_${reportType.value}.csv`;
 
   if (reportType.value === 'fleet') {
-    csvContent += 'รหัสรถ,ทะเบียน,จังหวัด,ยี่ห้อ,รุ่น,ประเภท,ปี,สถานะ,ผู้บันทึก\n';
+    csvContent += 'รหัสรถ,ชื่อรถ,ทะเบียน,จังหวัด,ยี่ห้อ,รุ่น,ประเภท,ปี,เลขตัวรถ(VIN),เลขเครื่องยนต์,สถานะ,ผู้บันทึก\n';
     activeVehicles.value.forEach(v => {
-      csvContent += `"${v.code}","${v.plateNumber}","${v.province}","${v.brand}","${v.model}","${v.type}","${v.year || ''}","${v.status}","${v.createdBy || ''}"\n`;
+      csvContent += `"${v.code}","${v.name || ''}","${v.plateNumber}","${v.province}","${v.brand}","${v.model}","${v.type}","${v.year || ''}","${v.vin || ''}","${v.engineNo || ''}","${v.status}","${v.createdBy || ''}"\n`;
     });
   } else if (reportType.value === 'docs') {
     csvContent += 'รหัสรถ,ทะเบียน,ประเภทเอกสาร,เลขที่/บริษัท,วันหมดอายุ,ค่าใช้จ่าย,ผู้บันทึก\n';
@@ -570,25 +592,39 @@ const filterByVehicle = (list) => {
   return list.filter(item => item.vehicleId === selectedVehicleId.value);
 };
 
-const filterByDateRange = (list, dateField) => {
+const filterByDateRange = (list, dateField, fallbackFields = []) => {
   return list.filter(item => {
-    const d = item[dateField];
+    let d = item[dateField];
+    if (!d && fallbackFields.length > 0) {
+      for (const f of fallbackFields) {
+        if (item[f]) {
+          d = typeof item[f] === 'string' && item[f].length > 10 ? item[f].slice(0, 10) : item[f];
+          break;
+        }
+      }
+    }
     if (!d) return false;
     return d >= startDate.value && d <= endDate.value;
   });
 };
 
+const sortedVehicles = computed(() => {
+  return [...vehicles.value].sort((a, b) => (a.code || '').localeCompare(b.code || '', undefined, { numeric: true, sensitivity: 'base' }));
+});
+
 const activeVehicles = computed(() => {
-  if (selectedVehicleId.value === 'all') return vehicles.value;
-  return vehicles.value.filter(v => v.id === selectedVehicleId.value);
+  const list = selectedVehicleId.value === 'all' 
+    ? vehicles.value 
+    : vehicles.value.filter(v => v.id === selectedVehicleId.value);
+  return [...list].sort((a, b) => (a.code || '').localeCompare(b.code || '', undefined, { numeric: true, sensitivity: 'base' }));
 });
 
 const activeOil = computed(() => {
-  return filterByDateRange(filterByVehicle(oilList.value), 'changeDate');
+  return filterByDateRange(filterByVehicle(oilList.value), 'changeDate', ['createdAt']);
 });
 
 const activeMnt = computed(() => {
-  return filterByDateRange(filterByVehicle(mntList.value), 'repairDate');
+  return filterByDateRange(filterByVehicle(mntList.value), 'repairDate', ['createdAt']);
 });
 
 const activeDocs = computed(() => {
@@ -601,15 +637,15 @@ const activeDocs = computed(() => {
 });
 
 const totalInsSpend = computed(() => {
-  return filterByDateRange(filterByVehicle(insuranceList.value), 'startDate').reduce((s, i) => s + (Number(i.premiumAmount) || 0), 0);
+  return filterByDateRange(filterByVehicle(insuranceList.value), 'startDate', ['endDate', 'createdAt']).reduce((s, i) => s + (Number(i.premiumAmount) || 0), 0);
 });
 
 const totalPrbSpend = computed(() => {
-  return filterByDateRange(filterByVehicle(prbList.value), 'startDate').reduce((s, p) => s + (Number(p.cost) || 0), 0);
+  return filterByDateRange(filterByVehicle(prbList.value), 'startDate', ['endDate', 'createdAt']).reduce((s, p) => s + (Number(p.cost) || 0), 0);
 });
 
 const totalTaxSpend = computed(() => {
-  return filterByDateRange(filterByVehicle(taxList.value), 'lastRenewalDate').reduce((s, t) => s + (Number(t.cost) || 0), 0);
+  return filterByDateRange(filterByVehicle(taxList.value), 'lastRenewalDate', ['expireDate', 'createdAt']).reduce((s, t) => s + (Number(t.cost) || 0), 0);
 });
 
 const totalOilSpend = computed(() => {

@@ -70,8 +70,10 @@ export const api = {
   scanAndNotifyLine: (force = false) => request('/line/scan-and-notify', { method: 'POST', body: JSON.stringify({ force }) }),
   retryLineLog: (id) => request(`/line/retry-log/${id}`, { method: 'POST' }),
 
-  // Reports
+  // Reports & Backup
   getFleetReport: () => request('/reports/fleet'),
+  backupDatabase: () => request('/backup'),
+  restoreDatabase: (data) => request('/restore', { method: 'POST', body: JSON.stringify(data) }),
   resetSeedData: () => request('/reset-data', { method: 'POST' }),
 
   // Admin Auth
