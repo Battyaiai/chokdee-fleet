@@ -553,5 +553,6 @@
       "stage": "test"
     }
   ],
-  "adminPin": "172839"
+  "adminPinHash": "pbkdf2:10000:14c2c835a26c36474e49e9e97d7a1cb2:9ce77301cd94f2c8ef8fb149aa0060a53b76113bfd6a13a13a5803b8ca9da1d15f8ab17672fb63542adfa8a7d27ad0f09e4d1b25c1fd8e70a8645516986524a9",
+  "audit_logs": []
 }
